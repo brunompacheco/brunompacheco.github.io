@@ -272,9 +272,9 @@ display_tags: ['formatting', 'images', 'links', 'math', 'code'] # these tags wil
 scholar:
 
   last_name: [Pacheco]
-  first_name: [Bruno, M.]
+  first_name: [Bruno Machado]
 
-  style: apa
+  style: elsevier-without-titles
   locale: en
 
   source: /_bibliography/
@@ -288,7 +288,8 @@ scholar:
   replace_strings: true
   join_strings: true
 
-  order: ascending
+  sort_by: year
+  order: descending
 
   details_dir: bibliography
   details_layout: bibtex.html
