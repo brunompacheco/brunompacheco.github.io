@@ -1,0 +1,4 @@
+User-agent: *
+Disallow:
+
+Sitemap: https://brunompacheco.github.io/sitemap.xml
