@@ -1,7 +1,7 @@
 GEM
   remote: https://rubygems.org/
   specs:
-    activesupport (7.0.5)
+    activesupport (7.0.4.3)
       concurrent-ruby (~> 1.0, >= 1.0.2)
       i18n (>= 1.6, < 2)
       minitest (>= 5.1)
@@ -127,7 +127,7 @@ GEM
     minitest (5.18.0)
     multi_xml (0.6.0)
     namae (1.1.1)
-    nokogiri (1.15.2-x86_64-linux)
+    nokogiri (1.15.1-x86_64-linux)
       racc (~> 1.4)
     pathutil (0.16.2)
       forwardable-extended (~> 2.6)
