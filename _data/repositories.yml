@@ -1,12 +1,9 @@
 github_users:
-  - torvalds
-  - alshedivat
+  - brunompacheco
 
 github_repos:
-  - alshedivat/al-folio
-  - twbs/bootstrap
-  - jekyll/jekyll
-  - jquery/jquery
-  - FortAwesome/Font-Awesome
-  - jpswalsh/academicons
-  - mathjax/MathJax
+  - brunompacheco/deep-learning-boilerplate
+  - brunompacheco/pideq
+  - brunompacheco/part-counting
+  - gama-ufsc/brats
+  - brunompacheco/brb
