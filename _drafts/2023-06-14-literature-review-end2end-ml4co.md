@@ -111,7 +111,61 @@ $$
     \max_{a\in \mathcal{A}} \, \frac{1}{|\mathcal{D}|} \sum_{I\in \mathcal{D}} m(I,a)
 .$$
 
+HOW TO INTEGRATE HEURISTICS AND MATHEURISTICS INTO THE DISCOURSE?
+
 ### Learning-based heuristics
+
+When we consider CO algorithms enhanced with machine learning models, the comparison is often over an uncountable set of algorithms.
+For example, let $$\Theta$$ be the parameter space of the ML models, and $$\mathcal{A}=\left\{ a(\theta) : \theta\in \Theta \right\} $$, i.e., the algorithms are defined by the ML model's parameters.
+The problem of selecting the best algorithm can be written
+
+$$
+    \max_{\theta\in \Theta} \, \frac{1}{|\mathcal{D}|} \sum_{I\in \mathcal{D}} m(I,a(\theta))
+.$$
+
+In other words, rather than searching for the best algorithm, one searches for the best parameter
+
+With respect to how ML models can be used in algorithms for CO, Bengio et al., 2021<d-cite key="bengio_machine_2021"></d-cite> proposed three categories of learning-based heuristics.
+Even though the categorization is not exhaustive (as will be seen later on), it is useful to show the possibilities that exist for applying ML models.
+
+At the "deepest" level, an ML model can be trained to take decisions within CO solvers, replacing costly computations or in the place of already existing heuristics within the solver.
+An example of this approach can be seen in <d-cite key="nair_solving_2021"></d-cite>, where the authors trained a deep learning model to select between variables for branching, within a branch-and-bound algorithm.
+
+<div class="row mt-3">
+    <div class="col-sm mt-3 mt-md-0">
+        {% include figure.html path="assets/img/bengio_aoa.png" class="img-fluid rounded z-depth-1" %}
+    </div>
+</div>
+<div class="caption">
+    Diagram of a ML model being used to take decisions within a CO solver (_OR_ block). Image from <d-cite key="bengio_machine_2021"></d-cite>.
+</div>
+
+The second category comprises heuristics with ML models being called to take decisions prior to the execution of the CO solvers.
+In this approach, the ML model's output helps to define the information provided to the CO solver.
+In <d-cite key="kruber_learning_2017"></d-cite>, the authors trained a model to decide whether to apply a Dantzig-Wolfe decomposition to reformulate an instance or not, based on the predicted running time reduction of the solver.
+
+<div class="row mt-3">
+    <div class="col-sm mt-3 mt-md-0">
+        {% include figure.html path="assets/img/bengio_l2c.png" class="img-fluid rounded z-depth-1" %}
+    </div>
+</div>
+<div class="caption">
+    Diagram of a ML model being used to enhance the information provided to a CO solver's (_OR_ block). Image from <d-cite key="bengio_machine_2021"></d-cite>.
+</div>
+
+Finally, ML models can be trained to predict a solution based on the information of an instance, which will be referred to as an _end-to-end_ approach.
+An example is the work by Vinyals et al.<d-cite key="vinyals_pointer_2015"></d-cite>, in which the authors propose a novel deep learning model capable of providing feasible solutions to the TSP.
+
+<div class="row mt-3">
+    <div class="col-sm mt-3 mt-md-0">
+        {% include figure.html path="assets/img/bengio_e2e.png" class="img-fluid rounded z-depth-1" %}
+    </div>
+</div>
+<div class="caption">
+    Diagram of a ML model being used as a heuristic by itself, i.e., without calling an optimization algorithm. This is the _end-to-end_ approach. Image from <d-cite key="bengio_machine_2021"></d-cite>.
+</div>
+
+Note that end-to-end models, beside being trained to predict a solution, can be used 
 
 - ML models can integrate in 3 different ways with CO solvers
     - Bengio's categories
