@@ -52,21 +52,27 @@ toc:
 
 ---
 
-Say you are in a big city and you need to go from one place (point A) to another (point B) in the fastest way.
-As there are finite many streets, there are finite many routes<d-footnote>As we are considering only routes without loops (acyclic graphs)</d-footnote>, thus, to find the fastest route, you can write a computer program that evaluates all possible routes and returns to you the fastest.
-However, the number of routes grow exponentially with the number of streets, so for a big city a random walk will probably take you to the destination before the computer program can compute all routes.
-Combinatorial optimization (CO) problems, such as finding the fastest route, are hard.
-In fact, CO is often used to refer to NP-hard integer optimization problems.
+Let us suppose that a delivery company must plan the route for a carrier given a set of packages.
+The route must take the carrier through the recipients of every package and back to the company headquarters.
+As there are finitely many packages, there are finitely many possible routes.
+To find the optimal route, you can write a computer program that evaluates all possible routes and returns the one with the smallest cost.
+It is easy to see that this program will always (eventually) finish and will return the optimal solution.
+However, as the number of solutions (routes) grows exponentially with the size of the problem (number of recipients/packages), for a large-enough number of deliveries, committing to a random route will probably be faster than waiting for the program to finish.
+This example is a classic occurrence of the Traveling Salesperson Problem (TSP), a widely studied combinatorial optimization (CO) problem.
 
-Despite being NP-hard, many CO problems are solved within reasonable time even for millions of variables and constraints.
-This is usually due to experts being able to exploit structures of the problem to create efficient heuristics that can generate good-enough approximations.
-Suppose you are quite familiar with the city in which you want to find the fastest route.
-Instead of iterating over all possibilities, you remove streets that take you away from your target, streets that will probably be blocked by traffic, and prioritize streets that you know are quite fast.
-Your new computer program will not iterate over all possible routes, so it may not find the optimal, but it will probably give you a very good route much quicker than the old one.
-Furthermore, instead of writing a computer program, you can just use your knowledge to guess a route based on your previous trips around the neighborhood.
-You probably will not guess the best route, but your guess may be enough for you.
+CO problems are hard.
+In fact, CO is often used to refer to NP-hard integer optimization problems.
+But despite being NP-hard, many CO problems are solved within reasonable time even for millions of variables (and constraints).
+This is usually due to experts being able to exploit structures of the problem to create efficient heuristics.
+
+In the delivery company example, suppose that you are quite familiar with the location of the deliveries.
+You modify the computer program, such that instead of iterating over all possible solutions, you remove routes that pass through residential, low-speed areas and prioritize routes that use high-speed roads.
+Your new computer program will not iterate over all possible routes, so it may not find the optimal solution, but it will probably give you a very good route much quicker than the previous one.
+Furthermore, instead of writing a computer program, you can just use your knowledge to guess a route based on your previous deliveries.
+You probably will not guess the best route, but your guess may be good enough for you.
 
 Sadly, the expert knowledge to develop heuristics for CO problems takes a lot of effort to develop and may result in heuristics that are not cheap to compute or easy to implement.
+For example, automatically finding which routes pass by low-speed zones may be costly.
 Machine learning (ML) techniques, on the other hand, seem like the perfect fit for such heuristics.
 In particular, deep learning has shown great results applied to high-dimensional structured data such as image, proteins, and text, which makes us think that it could provide great results as well when applied to CO problem instances.
 
@@ -74,11 +80,36 @@ In the following, you will see a brief introduction to machine-learning-based he
 _MILP_ because it is a formulation that covers many types of CO problems, and there are well-developed algorithms for it.
 _End-to-end_ because it will focus on deep learning models that are developed to predict candidate solutions to MILP instances, and heuristics that are built on top of such models.
 
-## Machine Learning for Combinatorial Optimization
+## Machine Learning for Combinatorial Optimization<d-footnote>The following is largely based on <d-cite key="bengio_machine_2021"></d-cite>, so I recommend you to it for a deeper look and more references.</d-footnote>
 
-The following is largely based on <d-cite key="bengio_machine_2021"></d-cite>, so I recommend you to it for a deeper look and more references.
+A CO problem is a problem of minimizing an _objective function_ given a finite set of _feasible solutions_.
+Given an algorithm for solving CO problems, its quality is usually determined from its computational complexity and experimental results on benchmark instances.
+However, an algorithm that works well on some CO problems may not work well for others.
+Thus, practitioners end up having to experiment between the alternatives on the market and, if none fulfills the requirements, having to adjust configurations, exploring the problem's structure, manually building heuristics, etc.
 
-Give examples along the way!
+To better grasp the challenge of selecting an algorithm for a realistic application, let us take the delivery company example of the introduction.
+We are going to suppose that the desired computer program must work only for problems on a given city and that the origin (company headquarters) is always the same.
+The goal of the company is to find a software that can find a good route within a time limit.
+Instead of picking a solver based on benchmarks, you test a few different solvers based on historical data (past orders).
+As your instances are too large, none of the algorithms can find a good solution on time given their default setting, so you explore different configurations, tweaking the parameters in the hope of improving their performance.
+Furthermore, you notice that the recipients are often grouped in certain regions, so you design an algorithm that first groups nearby recipients in a single vertex, solves this simplified problem, and then finds a route within each group of recipients given the outcome of the simplified problem.
+
+We can provide a mathematical formulation for the problem of finding a good algorithm for the problem of interest.
+Let $$\mathcal{I}$$ be the set of all instances of interest and $$P$$ be a probability distribution over $$\mathcal{I}$$.
+Let $$\mathcal{A}$$ be the set of all algorithms that can solve instances of the problem of interest and $$m : \mathcal{I}\times \mathcal{A}\to \mathbb{R}$$ be a performance metric
+For convenience, we will assume that, for any $$a_1,a_2 \in \mathcal{A}$$ and $$I \in  \mathcal{I}$$, then $$m\left( I,a_1 \right) > m\left( I,a_2 \right) $$ implies that $$a_1$$ outperforms $$a_2$$ in instance $$I$$.
+The problem of finding the best algorithm can be described as
+
+$$
+    \max_{a\in \mathcal{A}} \, \mathbb{E}_{I\sim P } m(I,a)
+.$$
+
+As this is usually impossible to compute, one can use the approximation based on a dataset $$\mathcal{D}$$ of instances independently drawn from $$P$$.
+The problem, then, becomes
+
+$$
+    \max_{a\in \mathcal{A}} \, \frac{1}{|\mathcal{D}|} \sum_{I\in \mathcal{D}} m(I,a)
+.$$
 
 ### Learning-based heuristics
 
