@@ -1,8 +1,8 @@
 ---
 layout: distill
-title: "ML4CO: end-to-end supervised learning for MILP"
+title: "ML4CO - Part 1: A brief overview of machine learning for combinatorial optimization"
 date: 2023-06-14
-description: a brief overview of machine learning for combinatorial optimization and a less-brief review of supervised end-to-end models for mixed-integer linear programming
+description: The big picture on machine learning applications as heuristics for combinatorial optimization.
 tags: ml4co milp msc-thesis deep-learning
 categories: literature-review
 giscus_comments: false
@@ -52,6 +52,14 @@ toc:
 
 ---
 
+<!-- TODO: find a better way to highlight this first section -->
+*This text is a direct result from the literature review I performed for my Master's.
+The main goal of this first part is to provide context and background for the following review on end-to-end learning-based heuristics for MILP.
+This is largely based on the work by Bengio et al.<d-cite key="bengio_machine_2021"></d-cite>, so I recommend it to the reader that wants to find more detailed information and more references.*
+
+<!-- ###  ‎ -->
+<br/>
+
 Let us suppose that a delivery company must plan the route for a carrier given a set of packages.
 The route must take the carrier through the recipients of every package and back to the company headquarters.
 As there are finitely many packages, there are finitely many possible routes.
@@ -72,20 +80,17 @@ Furthermore, instead of writing a computer program, you can just use your knowle
 You probably will not guess the best route, but your guess may be good enough for you.
 
 Sadly, the expert knowledge to develop heuristics for CO problems takes a lot of effort to develop and may result in heuristics that are not cheap to compute or easy to implement.
-For example, automatically finding which routes pass by low-speed zones may be costly.
 Machine learning (ML) techniques, on the other hand, seem like the perfect fit for such heuristics.
-In particular, deep learning has shown great results applied to high-dimensional structured data such as image, proteins, and text, which makes us think that it could provide great results as well when applied to CO problem instances.
+For example, computing which routes pass by low-speed zones and which do not may be as expensive as finding a good route.
+At the same time, historical data on past routes along with the speed at each section can be used to train a classifier that determines whether a new route is slow or not.
+Furthermore, deep learning has shown great results applied to high-dimensional structured data such as image, proteins, and text, which makes us think that it could provide great results as well when applied to CO problem instances.
 
-In the following, you will see a brief introduction to machine-learning-based heuristics and then a more in-depth review of end-to-end approaches to mixed-integer linear programming (MILP).
-_MILP_ because it is a formulation that covers many types of CO problems, and there are well-developed algorithms for it.
-_End-to-end_ because it will focus on deep learning models that are developed to predict candidate solutions to MILP instances, and heuristics that are built on top of such models.
-
-## Machine Learning for Combinatorial Optimization<d-footnote>The following is largely based on <d-cite key="bengio_machine_2021"></d-cite>, so I recommend you to it for a deeper look and more references.</d-footnote>
+## Algorithm selection
 
 A CO problem is a problem of minimizing an _objective function_ given a finite set of _feasible solutions_.
 Given an algorithm for solving CO problems, its quality is usually determined from its computational complexity and experimental results on benchmark instances.
-However, an algorithm that works well on some CO problems may not work well for others.
-Thus, practitioners end up having to experiment between the alternatives on the market and, if none fulfills the requirements, having to adjust configurations, exploring the problem's structure, manually building heuristics, etc.
+However, an algorithm that works well on some classes of CO problems may not work well on others.
+Thus, practitioners end up having to experiment between the alternatives and, if none fulfills the requirements, having to adjust configurations, exploring the problem's structure, manually building heuristics, etc.
 
 To better grasp the challenge of selecting an algorithm for a realistic application, let us take the delivery company example of the introduction.
 We are going to suppose that the desired computer program must work only for problems on a given city and that the origin (company headquarters) is always the same.
@@ -111,9 +116,7 @@ $$
     \max_{a\in \mathcal{A}} \, \frac{1}{|\mathcal{D}|} \sum_{I\in \mathcal{D}} m(I,a)
 .$$
 
-HOW TO INTEGRATE HEURISTICS AND MATHEURISTICS INTO THE DISCOURSE?
-
-### Learning-based heuristics
+## Learning-based heuristics
 
 When we consider CO algorithms enhanced with machine learning models, the comparison is often over an uncountable set of algorithms.
 For example, let $$\Theta$$ be the parameter space of the ML models, and $$\mathcal{A}=\left\{ a(\theta) : \theta\in \Theta \right\} $$, i.e., the algorithms are defined by the ML model's parameters.
@@ -123,13 +126,13 @@ $$
     \max_{\theta\in \Theta} \, \frac{1}{|\mathcal{D}|} \sum_{I\in \mathcal{D}} m(I,a(\theta))
 .$$
 
-In other words, rather than searching for the best algorithm, one searches for the best parameter
+In other words, rather than searching for the best algorithm, one searches for the best vector of parameters.
 
-With respect to how ML models can be used in algorithms for CO, Bengio et al., 2021<d-cite key="bengio_machine_2021"></d-cite> proposed three categories of learning-based heuristics.
+With respect to how ML models can be used in algorithms for CO, Bengio et al.<d-cite key="bengio_machine_2021"></d-cite> proposed three categories of learning-based heuristics.
 Even though the categorization is not exhaustive (as will be seen later on), it is useful to show the possibilities that exist for applying ML models.
 
 At the "deepest" level, an ML model can be trained to take decisions within CO solvers, replacing costly computations or in the place of already existing heuristics within the solver.
-An example of this approach can be seen in <d-cite key="nair_solving_2021"></d-cite>, where the authors trained a deep learning model to select between variables for branching, within a branch-and-bound algorithm.
+An example of this approach can be seen in Nair et al.<d-cite key="nair_solving_2021"></d-cite>, where the authors trained a deep learning model to select between variables for branching, within a branch-and-bound algorithm.
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
@@ -137,12 +140,12 @@ An example of this approach can be seen in <d-cite key="nair_solving_2021"></d-c
     </div>
 </div>
 <div class="caption">
-    Diagram of a ML model being used to take decisions within a CO solver (_OR_ block). Image from <d-cite key="bengio_machine_2021"></d-cite>.
+    Diagram of a ML model being used to take decisions within a CO solver (_OR_ block). Image from Bengio et al.<d-cite key="bengio_machine_2021"></d-cite>.
 </div>
 
 The second category comprises heuristics with ML models being called to take decisions prior to the execution of the CO solvers.
 In this approach, the ML model's output helps to define the information provided to the CO solver.
-In <d-cite key="kruber_learning_2017"></d-cite>, the authors trained a model to decide whether to apply a Dantzig-Wolfe decomposition to reformulate an instance or not, based on the predicted running time reduction of the solver.
+In Kruber et al.<d-cite key="kruber_learning_2017"></d-cite>, the authors trained a model to decide whether to apply a Dantzig-Wolfe decomposition to reformulate an instance or not, based on the predicted running time reduction of the solver.
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
@@ -150,7 +153,7 @@ In <d-cite key="kruber_learning_2017"></d-cite>, the authors trained a model to 
     </div>
 </div>
 <div class="caption">
-    Diagram of a ML model being used to enhance the information provided to a CO solver's (_OR_ block). Image from <d-cite key="bengio_machine_2021"></d-cite>.
+    Diagram of a ML model being used to enhance the information provided to a CO solver's (_OR_ block). Image from Bengio et al.<d-cite key="bengio_machine_2021"></d-cite>.
 </div>
 
 Finally, ML models can be trained to predict a solution based on the information of an instance, which will be referred to as an _end-to-end_ approach.
@@ -162,23 +165,29 @@ An example is the work by Vinyals et al.<d-cite key="vinyals_pointer_2015"></d-c
     </div>
 </div>
 <div class="caption">
-    Diagram of a ML model being used as a heuristic by itself, i.e., without calling an optimization algorithm. This is the _end-to-end_ approach. Image from <d-cite key="bengio_machine_2021"></d-cite>.
+    Diagram of a ML model being used as a heuristic by itself, i.e., without calling an optimization algorithm. This is the end-to-end approach. Image from Bengio et al.<d-cite key="bengio_machine_2021"></d-cite>.
 </div>
 
-Note that end-to-end models, beside being trained to predict a solution, can be used 
+Note that end-to-end models, beside being trained to predict a solution, can be used in different settings.
+For example, the model's output (a candidate solution) can be used to define a region for proximity search, as done by Han et al.<d-cite key="han_gnn-guided_2023"></d-cite>.
 
-- ML models can integrate in 3 different ways with CO solvers
-    - Bengio's categories
+## Training ML models
 
-### Training ML models
+### Supervised learning
+
+For any given structure of CO learning-based heuristic, training through supervision requires us to provide data on the inputs and expected outputs for the model.
+We assume that the training data was generated by an "expert", which the model will learn to imitate.
+Supervised learning is possible whenever we have either observations on the expert (e.g., historical performance of a human operator), or access to a data generation process.
+However, supervised learning is mostly adequate to problems in which the expert is not suitable for the application, e.g., because it is too expensive to compute, once the ML model's performance will, at best, be *on par* with the expert's performance.
+
+In Gasse et al.<d-cite key="gasse_exact_2019"></d-cite>, the authors take as an expert the strong branching rule, which is known to provide good results in branch-and-bound, but is expensive to compute.
+The data is generated beforehand and fed to the training algorithm as input-output pairs, which guides the ML model towards imitating the rule.
+
+### Reinforcement learning
+
+By letting the model explore the possible outputs and rewarding it accordingly to the consequences, c
+Instead of "teaching" the desired behavior for the model, 
 
 - ML models can be trained in 2 ways (imitation and exploration)
     - Imitation => faster computation of a known expert
     - Exploration => possibly a better performance than known expert
-
-## Supervised Learning End-to-end Heuristics for MILP
-
-### MILP
-
-#### Instances embedding
-
