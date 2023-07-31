@@ -22,15 +22,12 @@ bibliography: ML2MILP.bib
 #   - we may want to automate TOC generation in the future using
 #     jekyll-toc plugin (https://github.com/toshimaru/jekyll-toc).
 toc:
-  - name: Machine Learning for Combinatorial Optimization
+  - name: Algorithm selection
+  - name: Learning-based heuristics
+  - name: Training ML models
     subsections:
-      - name: Learning-based heuristics
-      - name: Training ML models
-  - name: Supervised Learning End-to-end Heuristics for MILP
-    subsections:
-      - name: MILP
-        subsections:
-          - name: Instances embedding
+      - name: Supervised learning
+      - name: Reinforcement learning
 
 # Below is an example of injecting additional post-specific styles.
 # If you use this post as a template, delete this _styles block.
@@ -71,19 +68,21 @@ This example is a classic occurrence of the Traveling Salesperson Problem (TSP),
 CO problems are hard.
 In fact, CO is often used to refer to NP-hard integer optimization problems.
 But despite being NP-hard, many CO problems are solved within reasonable time even for millions of variables (and constraints).
-This is usually due to experts being able to exploit structures of the problem to create efficient heuristics.
+This is usually due to experts being able to exploit structures of the problem, creating efficient heuristics.
 
 In the delivery company example, suppose that you are quite familiar with the location of the deliveries.
 You modify the computer program, such that instead of iterating over all possible solutions, you remove routes that pass through residential, low-speed areas and prioritize routes that use high-speed roads.
 Your new computer program will not iterate over all possible routes, so it may not find the optimal solution, but it will probably give you a very good route much quicker than the previous one.
-Furthermore, instead of writing a computer program, you can just use your knowledge to guess a route based on your previous deliveries.
-You probably will not guess the best route, but your guess may be good enough for you.
+Furthermore, instead of writing a computer program, you can let an experienced carrier guess a route based on their previous deliveries.
+The guess probably won't be the best route, but it may be good enough.
 
 Sadly, the expert knowledge to develop heuristics for CO problems takes a lot of effort to develop and may result in heuristics that are not cheap to compute or easy to implement.
-Machine learning (ML) techniques, on the other hand, seem like the perfect fit for such heuristics.
+Machine learning (ML) techniques, on the other hand, seem like the perfect fit for such heuristics, as they do not require an expert and are really fast to compute.
+On top of that, deep learning has shown great results applied to high-dimensional structured data such as image, proteins, and text, which makes us think that it could provide great results as well when applied to CO problem instances.
+
 For example, computing which routes pass by low-speed zones and which do not may be as expensive as finding a good route.
 At the same time, historical data on past routes along with the speed at each section can be used to train a classifier that determines whether a new route is slow or not.
-Furthermore, deep learning has shown great results applied to high-dimensional structured data such as image, proteins, and text, which makes us think that it could provide great results as well when applied to CO problem instances.
+Furthermore, instead of embedding the graph-like traffic data into a low-dimensional, tabular format for machine learning models, one can use a graph neural network as the classifier.
 
 ## Algorithm selection
 
@@ -140,7 +139,7 @@ An example of this approach can be seen in Nair et al.<d-cite key="nair_solving_
     </div>
 </div>
 <div class="caption">
-    Diagram of a ML model being used to take decisions within a CO solver (_OR_ block). Image from Bengio et al.<d-cite key="bengio_machine_2021"></d-cite>.
+    Diagram of a ML model being used to take decisions within a CO solver (<em>OR</em> block). Image from Bengio et al.<d-cite key="bengio_machine_2021"></d-cite>.
 </div>
 
 The second category comprises heuristics with ML models being called to take decisions prior to the execution of the CO solvers.
@@ -153,7 +152,7 @@ In Kruber et al.<d-cite key="kruber_learning_2017"></d-cite>, the authors traine
     </div>
 </div>
 <div class="caption">
-    Diagram of a ML model being used to enhance the information provided to a CO solver's (_OR_ block). Image from Bengio et al.<d-cite key="bengio_machine_2021"></d-cite>.
+    Diagram of a ML model being used to enhance the information provided to a CO solver (<em>OR</em> block). Image from Bengio et al.<d-cite key="bengio_machine_2021"></d-cite>.
 </div>
 
 Finally, ML models can be trained to predict a solution based on the information of an instance, which will be referred to as an _end-to-end_ approach.
@@ -177,7 +176,9 @@ For example, the model's output (a candidate solution) can be used to define a r
 
 For any given structure of CO learning-based heuristic, training through supervision requires us to provide data on the inputs and expected outputs for the model.
 We assume that the training data was generated by an "expert", which the model will learn to imitate.
-Supervised learning is possible whenever we have either observations on the expert (e.g., historical performance of a human operator), or access to a data generation process.
+Therefore, if we provide the model with the optimal solutions as targets, the model will learn to solve the optimization problems.
+
+Supervised learning is possible whenever we have either observations on the expert (e.g., historical performance of a human operator), or access to a data generation process (e.g., artificial instances of the problem and targets given by a solver).
 However, supervised learning is mostly adequate to problems in which the expert is not suitable for the application, e.g., because it is too expensive to compute, once the ML model's performance will, at best, be *on par* with the expert's performance.
 
 In Gasse et al.<d-cite key="gasse_exact_2019"></d-cite>, the authors take as an expert the strong branching rule, which is known to provide good results in branch-and-bound, but is expensive to compute.
@@ -185,9 +186,16 @@ The data is generated beforehand and fed to the training algorithm as input-outp
 
 ### Reinforcement learning
 
-By letting the model explore the possible outputs and rewarding it accordingly to the consequences, c
-Instead of "teaching" the desired behavior for the model, 
+Instead of teaching the model the desired behavior (targets), we can let the model learn by trial-and-error.
+More precisely, the model can be seen as an _agent_ that modifies the _state_ of an _environment_ (e.g., current node of a branch-and-bound tree) through _actions_ (e.g., variable selection for branching).
+For the model to learn, we need to provide a function that _rewards_ the model if the desired states are achieved or the right actions are performed.
 
-- ML models can be trained in 2 ways (imitation and exploration)
-    - Imitation => faster computation of a known expert
-    - Exploration => possibly a better performance than known expert
+To use reinforcement learning, therefore, we do not need the expected outputs of the model.
+If the reward signal matches the optimization goal, the model will learn to solve the optimization problems without ever being told what the solutions are.
+Note that this allows for the model to outperform any known method.
+However, as there are usually many possible actions (dimensionality of the model's output) and states, the learning problem quickly becomes intractable.
+
+In contrast to the example from the previous section (Supervised learning), in Etheve et al.<d-cite key="etheve_reinforcement_2020"></d-cite>, the authors propose to learn branching from scratch.
+They adapt reinforcement learning techniques (Q-learning) and propose an approach specific for the branch-and-bound setting.
+Through the proposed framework, the model learns to minimize the size of the branch-and-bound tree (global metric).
+Notably, all evaluated frameworks require thousands of iterations to achieve competitive performance, in which each iteration requires the optimization of hundreds of CO problems, i.e., the computational cost for training is high even for problems of modest size.

@@ -1,4 +1,17 @@
 
+@inproceedings{etheve_reinforcement_2020,
+	location = {Cham},
+	title = {Reinforcement Learning for Variable Selection in a Branch and Bound Algorithm},
+	isbn = {978-3-030-58942-4},
+	abstract = {Mixed integer linear programs are commonly solved by Branch and Bound algorithms. A key factor of the efficiency of the most successful commercial solvers is their fine-tuned heuristics. In this paper, we leverage patterns in real-world instances to learn from scratch a new branching strategy optimised for a given problem and compare it with a commercial solver. We propose {FMSTS}, a novel Reinforcement Learning approach specifically designed for this task. The strength of our method lies in the consistency between a local value function and a global metric of interest. In addition, we provide insights for adapting known {RL} techniques to the Branch and Bound setting, and present a new neural network architecture inspired from the literature. To our knowledge, it is the first time Reinforcement Learning has been used to fully optimise the branching strategy. Computational experiments show that our method is appropriate and able to generalise well to new instances.},
+	pages = {176--185},
+	booktitle = {Integration of Constraint Programming, Artificial Intelligence, and Operations Research},
+	publisher = {Springer International Publishing},
+	author = {Etheve, Marc and Alès, Zacharie and Bissuel, Côme and Juan, Olivier and Kedad-Sidhoum, Safia},
+	editor = {Hebrard, Emmanuel and Musliu, Nysret},
+	date = {2020},
+}
+
 @article{bengio_machine_2021,
 	title = {Machine learning for combinatorial optimization: A methodological tour d’horizon},
 	volume = {290},
@@ -193,7 +206,7 @@
 }
 
 @misc{han_gnn-guided_2023,
-	title = {A {GNN}-Guided Predict-and-Search Framework for Mixed-Integer Linear Programming},
+	title = {A GNN-Guided Predict-and-Search Framework for Mixed-Integer Linear Programming},
 	url = {http://arxiv.org/abs/2302.05636},
 	doi = {10.48550/arXiv.2302.05636},
 	abstract = {Mixed-integer linear programming ({MILP}) is widely employed for modeling combinatorial optimization problems. In practice, similar {MILP} instances with only coefficient variations are routinely solved, and machine learning ({ML}) algorithms are capable of capturing common patterns across these {MILP} instances. In this work, we combine {ML} with optimization and propose a novel predict-and-search framework for efficiently identifying high-quality feasible solutions. Specifically, we first utilize graph neural networks to predict the marginal probability of each variable, and then search for the best feasible solution within a properly defined ball around the predicted solution. We conduct extensive experiments on public datasets, and computational results demonstrate that our proposed framework achieves 51.1\% and 9.9\% performance improvements to {MILP} solvers {SCIP} and Gurobi on primal gaps, respectively.},
