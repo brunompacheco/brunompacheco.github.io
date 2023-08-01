@@ -28,6 +28,11 @@ toc:
     subsections:
       - name: Supervised learning
       - name: Reinforcement learning
+  - name: Challenges
+    subsections:
+      - name: Data generation
+      - name: Guarantees
+      - name: Problem size
 
 # Below is an example of injecting additional post-specific styles.
 # If you use this post as a template, delete this _styles block.
@@ -207,19 +212,17 @@ Regardless of the heuristic configuration or the training approach, developing m
 ### Data generation
 
 The performance of learning algorithms depends heavily on the data available, both in quantity and in quality.
-To have a reliable estimation of the generalization error, it is essential that the test set is drawn from a realistic distribution.
-The same is true for the training set, but with respect to reducing the generalization error.
-
+<!-- To have a reliable estimation of the generalization error, it is essential that the test set is drawn from a realistic distribution.
+The same is true for the training set, but with respect to reducing the generalization error. -->
 The most straight-forward way to build the datasets is to sample from historical data.
-In the delivery company example of the introduction, this is equivalent to acquiring the problems and the routes taken for past deliveries.
+In the delivery company example of the introduction, this is equivalent to acquiring the problems and the routes of past deliveries.
 Although a valid approach for collecting realistic instances of CO problems, sampling from historical data limits the performance (on training and evaluation) to that of the previous "expert".
 Furthermore, applications that have large-enough historical data are usually those for which a fast-enough solution already exists, limiting the gains to computational speed-ups.
 
 A more general scenario is to have to generate problem instances for training and testing.
-This scenario usually inccurs in high development costs, as finding good solutions (even when just for the test set, in the case of RL) is computationally costly for problems of practical interest.
-Furthremore, even determining whether a problem instance is feasible or not is generally itself an NP-hard problem.
-On top of that, we known that (assuming NP $$\neq$$ co-NP) polynomial-time instance generation methods for CO problems actually sample from easier sub-problems<d-cite key="yehuda_2020"></d-cite>.
-
+<!-- This scenario usually inccurs in high development costs, as finding good solutions (even when just for the test set, in the case of RL) is computationally costly for problems of practical interest.
+Furthermore, even determining whether a problem instance is feasible or not is generally itself an NP-hard problem.
+On top of that, we known that (assuming NP $$\neq$$ co-NP) polynomial-time instance generation methods for CO problems actually sample from easier sub-problems<d-cite key="yehuda_2020"></d-cite>. -->
 Some interesting references on generating instances of optimization problems can be seen in the works by Smith-Miles et al.<d-cite key="smith-miles_generating_2015"></d-cite> and Malitsky et al.<d-cite key="malitsky_structure-preserving_2016"></d-cite>.
 
 ### Guarantees
@@ -239,9 +242,8 @@ However, large problems also imply in higher dimensionality, which increases (ex
 This can be alleviated by exploring symmetries of the problem or working in the embedding of the instance.
 For example, many works have exploited the efficiency of graph neural networks by embedding the instances as graphs.
 
+<!-- ###  ‎ -->
+<br/>
 
-- feasibility
-    - heuristics do not provide optimality guarantees
-    - however, ML models usually do not provide even feasibility guarantees on the output
-    - as GD is used to train, the models must be differentiable, which makes it hard to impose the constriants that define the feasible region (give SOS constraint through softmax)
-- large problems (hard to find optimals for SL, and costly to optimize for RL)
+*That was it for this first part.
+In part 2, I will dive deeper into end-to-end models trained through supervision, and end-to-end heuristics using these models.*
