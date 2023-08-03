@@ -57,13 +57,24 @@ In fact, most combinatorial optimization problems can be modeled as mixed-intege
 
 Furthermore, there are reliable algorithms<d-cite key="morrison_branch-and-bound_2016"></d-cite> and software solutions<d-cite key="bestuzheva_scip_2021"></d-cite> to solve MILPs, which makes them widely used for combinatorial optimization problems even if the problem involves nonlinear objective and/or constraints, e.g., by using piecewise linearization, which admits MILP formulations<d-cite key="bernreuther_solving_2017"></d-cite>.
 
-Heuristics can be used to solve MILP problems whenever there is a time limitation and a tolerance for sub-optimal solutions, as is the case for any combinatorial optimization problem.
-In fact, by the NP-hard nature of MILP, heuristics are often vital for large problems.
-However, heuristics traditionally require expert knowledge to be developed, which is expensive and may not result in an efficient algorithm.
+Instead of algorithms, heuristics can be used to solve MILP problems whenever there is a time limitation and a tolerance for sub-optimal solutions.
+In fact, by the NP-hard nature of MILP, heuristics are often vital for large problems in realistic applications.
+Heuristics traditionally require expert knowledge to be developed, which is expensive and may not result in an efficient algorithm.
 
 Instead of an expert, we can use data and machine learning to develop a learning-based heuristic.
-One way to apply machine learning algorithms is to train a deep learning model through supervision to predict a candidate solution given a problem instance.
-Such *end-to-end* model can be used straight away, as a heuristic itseld, or it can be augmented, for example, to warmstart a MILP solver<d-cite key="khalil_mip-gnn_2022"></d-cite>, in a matheuristic.
+Machine learning allows us to distill the knowledge from data instead of the years of experience from an expert.
+Furthremore, machine learning models are fast to compute (during inference) and, more specifically for the case of deep learning models, have shown great results to high-dimensional structured data.
+
+Using machine learning algorithms to quickly find solutions to MILP problems is not a new idea.
+In fact, in 1985, John Hopfield showed that the Travelling Salesperson Problem could be solved using a neural network<d-cite key="hopfield_neural_1985"></d-cite>.
+Unfortunately, the lack of specialized hardware <d-footnote>The lack of GPUs was a major drawback, as neural networks require performing operations with large matrices and vectors, which had to be split up to fit in the CPUs. This made them very slow in comparison to the heuristic competitors.</d-footnote> made this area of research fade out in the late 90s<d-cite key="smith_neural_1999"></d-cite>.
+
+In the past few years, significant contributions have shed a new light into this area of study, now including deep learning techniques, which has driven a lot of attention from the research community<d-cite key="bengio_machine_2021,cappart_combinatorial_2022,zhang_survey_2023"></d-cite>.
+Authors have suggested many approaches to incorporate deep learning models into algorithms for MILP.
+Examples include using the model to help guide the tree search in a branch-and-bound algorithm<d-cite key="nair_solving_2021"></d-cite>, evaluating whether a decomposition can speed up the optimization<d-cite key="kruber_learning_2017"></d-cite>, and switching heuristics during the branch-and-bound iterations<d-cite key="liberto_dash_2016"></d-cite>.
+
+One set of applications with promising results is to train a deep learning model through supervision to predict a candidate solution given a problem instance.
+Such an *end-to-end* model can be used straight away, as a heuristic itseld, or it can be augmented, for example, to warmstart a MILP solver<d-cite key="khalil_mip-gnn_2022"></d-cite>, in a matheuristic.
 The building blocks of an MILP (mat)heuristics based on supervised, end-to-end deep learning models are summarized in the diagram below.
 
 <div class="row mt-3">
