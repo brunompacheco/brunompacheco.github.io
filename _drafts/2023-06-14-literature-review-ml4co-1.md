@@ -225,6 +225,13 @@ Furthermore, even determining whether a problem instance is feasible or not is g
 On top of that, we known that (assuming NP $$\neq$$ co-NP) polynomial-time instance generation methods for CO problems actually sample from easier sub-problems<d-cite key="yehuda_2020"></d-cite>. -->
 Some interesting references on generating instances of optimization problems can be seen in the works by Smith-Miles et al.<d-cite key="smith-miles_generating_2015"></d-cite> and Malitsky et al.<d-cite key="malitsky_structure-preserving_2016"></d-cite>.
 
+<!-- TODO -->
+<!-- ### Dimensionality
+
+CO problems have high dimensionality and are highly structured.
+=> the higher the number of dimensions, exponentially more data is necessary for learning
+Traditional ML models are not built to deal with the structures within CO problems, e.g., TSP (invariant to graph definition). -->
+
 ### Guarantees
 
 Opting for a heuristic solution (usually) implies in abdicating from optimality guarantees.
@@ -241,6 +248,8 @@ As discussed before, larger problems imply in higher costs for generating feasib
 However, large problems also imply in higher dimensionality, which increases (exponentially) the expected training set size for achieving satisfactory performance, and also the trianing cost.
 This can be alleviated by exploring symmetries of the problem or working in the embedding of the instance.
 For example, many works have exploited the efficiency of graph neural networks by embedding the instances as graphs.
+
+<!-- Maybe add a conclusion discussing the forthcomings? I believe I could, inspired by Smith, 1999, describe why ML+CO is attracting plenty of attention now (in comparison to the 90s), and use this as a hook to Part 2, because of structured models/GNNs. -->
 
 <!-- ###  ‎ -->
 <br/>
