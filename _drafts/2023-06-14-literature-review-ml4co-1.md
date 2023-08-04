@@ -123,11 +123,11 @@ $$
 ## Learning-based heuristics
 
 When we consider CO algorithms enhanced with machine learning models, the comparison is often over an uncountable set of algorithms.
-For example, let $$\Theta$$ be the parameter space of the ML models, and $$\mathcal{A}=\left\{ a(\theta) : \theta\in \Theta \right\} $$, i.e., the algorithms are defined by the ML model's parameters.
+For example, let $$\Theta$$ be the parameter space of the ML models, and $$\mathcal{A}=\left\{ a_\theta : \theta\in \Theta \right\} $$, i.e., the algorithms are defined by the ML model's parameters.
 The problem of selecting the best algorithm can be written
 
 $$
-    \max_{\theta\in \Theta} \, \frac{1}{|\mathcal{D}|} \sum_{I\in \mathcal{D}} m(I,a(\theta))
+    \max_{\theta\in \Theta} \, \frac{1}{|\mathcal{D}|} \sum_{I\in \mathcal{D}} m(I,a_\theta)
 .$$
 
 In other words, rather than searching for the best algorithm, one searches for the best vector of parameters.
