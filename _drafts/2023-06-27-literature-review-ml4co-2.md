@@ -65,14 +65,6 @@ Instead of an expert, we can use data and machine learning to develop a learning
 Machine learning allows us to distill the knowledge from data instead of the years of experience from an expert.
 Furthremore, machine learning models are fast to compute (during inference) and, more specifically for the case of deep learning models, have shown great results to high-dimensional structured data.
 
-Using machine learning algorithms to quickly find solutions to MILP problems is not a new idea.
-In fact, in 1985, John Hopfield showed that the Travelling Salesperson Problem could be solved using a neural network<d-cite key="hopfield_neural_1985"></d-cite>.
-Unfortunately, the lack of specialized hardware <d-footnote>The lack of GPUs was a major drawback, as neural networks require performing operations with large matrices and vectors, which had to be split up to fit in the CPUs. This made them very slow in comparison to the heuristic competitors.</d-footnote> made this area of research fade out in the late 90s<d-cite key="smith_neural_1999"></d-cite>.
-
-In the past few years, significant contributions have shed a new light into this area of study, now including deep learning techniques, which has driven a lot of attention from the research community<d-cite key="bengio_machine_2021,cappart_combinatorial_2022,zhang_survey_2023"></d-cite>.
-Authors have suggested many approaches to incorporate deep learning models into algorithms for MILP.
-Examples include using the model to help guide the tree search in a branch-and-bound algorithm<d-cite key="nair_solving_2021"></d-cite>, evaluating whether a decomposition can speed up the optimization<d-cite key="kruber_learning_2017"></d-cite>, and switching heuristics during the branch-and-bound iterations<d-cite key="liberto_dash_2016"></d-cite>.
-
 One set of applications with promising results is to train a deep learning model through supervision to predict a candidate solution given a problem instance.
 Such an *end-to-end* model can be used straight away, as a heuristic itseld, or it can be augmented, for example, to warmstart a MILP solver<d-cite key="khalil_mip-gnn_2022"></d-cite>, in a matheuristic.
 The building blocks of an MILP (mat)heuristics based on supervised, end-to-end deep learning models are summarized in the diagram below.
@@ -89,11 +81,58 @@ The building blocks of an MILP (mat)heuristics based on supervised, end-to-end d
     The style follows the diagrams from Bengio et al.<d-cite key="bengio_machine_2021"></d-cite>.
 </div>
 
+## MILP
 
-- MILP
-  - Definition
-  - use qualification text
-  - Solving through branch-and-bound (maybe introduce through the bnb tree + tree search paradigm?)
+Mathematical programming is the process of finding the best possible (optimal) solution given a set of constraints by formulating programs to maximize or minimize an objective function.
+A mixed-integer linear program describes the objective and the constraints through linear functions over the variables of interest.
+Formally, we can formulate an MILP as
+
+$$\begin{equation}\begin{split}\label{eq:milp-definition}
+    \min_{\mathbf{x}} &\quad \mathbf{c}^T \mathbf{x} \\
+    \text{s.t.}&\quad A\mathbf{x} \ge \mathbf{b} \\
+	       & \mathbf{x} \in \mathbb{Z}^{k}\times \mathbb{R}^{n-k},
+\end{split}\end{equation}$$
+
+where vector $$\mathbf{x}$$ contains the $$n$$ variables of interest, of which $$x_1,\ldots,x_k$$ are integer variables.
+$$\mathbf{c} \in \mathbb{R}^{n}$$ is the cost vector defining the objective function, and $$A \in \mathbb{R}^{m\times n},\mathbf{b}\in \mathbb{R}^{m}$$ describe the constraints.
+Note that this formulation embraces problems with equality constraints (by using two inequalities) as well as maximization problems (by negating the values of the objective vector).
+It is also possible to use MILPs to approximately solve non-linear problems by approximating the nonlinearities as, for example, piecewise linear functions or neural networks with ReLU activations, which admit MILP formulations <d-cite key="grimstad_relu_2019"></d-cite>.
+
+Branch-and-bound (B&B) is a widely used technique to solve MILP problems.
+It consists of dividing the problem into solving LP relaxations, that is, assigning values for some of the integer variables and solving LP relaxations.
+B&B is an exploratory procedure, i.e., a tree search over the possible value assignments for the integer variables.
+Thus, even though solving the LP relaxations can be done in polynomial time, the expensive tree search renders the algorithm NP-hard.
+
+Using machine learning algorithms to quickly find solutions to MILP problems is not a new idea.
+In fact, in 1985, John Hopfield showed that the Travelling Salesperson Problem could be solved using a neural network<d-cite key="hopfield_neural_1985"></d-cite>.
+Unfortunately, the lack of specialized hardware <d-footnote>The lack of GPUs was a major drawback, as neural networks require performing operations with large matrices and vectors, which had to be split up to fit in the CPUs. This made them very slow in comparison to the heuristic competitors.</d-footnote> made this area of research fade out in the late 90s<d-cite key="smith_neural_1999"></d-cite>.
+
+In the past few years, significant contributions have shed a new light into this area of study, now including deep learning techniques, which has driven a lot of attention from the research community<d-cite key="bengio_machine_2021,cappart_combinatorial_2022,zhang_survey_2023"></d-cite>.
+Authors have suggested many approaches to incorporate deep learning models into algorithms for MILP.
+Examples include using the model to help guide the tree search in a branch-and-bound algorithm<d-cite key="nair_solving_2021"></d-cite>, evaluating whether a decomposition can speed up the optimization<d-cite key="kruber_learning_2017"></d-cite>, and switching heuristics during the branch-and-bound iterations<d-cite key="liberto_dash_2016"></d-cite>.
+
+## End-to-end models
+
+End-to-end models are algorithms that take as input an instance of an MILP problem of interest, and provide as output a predicted optimal solution<d-footnote>An MILP may have multiple optimal solutions.</d-footnote>.
+To begin with our definitions, let us call $$\mathcal{I}$$ the set of all instances of an MILP problem of interest.
+In our context, we will define end-to-end models as _parameterized_ functions of the form
+
+$$\begin{align*}
+f: \mathcal{I}\times \Theta &\longrightarrow Y \\
+I,\theta &\longmapsto \mathbf{y} = f_\theta(I),
+\end{align*}$$
+
+in which $$Y\supseteq X$$, where $$X = \left\{ \mathbf{x} \in \mathbb{Z}^{k}\times \mathbb{R}^{n-k} : A\mathbf{x} \ge \mathbf{b} \right\} $$.
+The parameter vector $$\theta\in\Theta$$ contains the entirety of the trainable parameters, such as the weights and biases of a neural network.
+Note that this definition is such that $$f$$ contains both the _Prep._ and the _DL_ blocks of the diagram in the introduction.
+Furthermore, the output of the model is not properly a candidate solution, but rather an approximation, as the model's output must be differentiable with respect to the parameters for it to be trainable through gradient-based optimization (e.g., stochastic gradient descent, Adam<d-cite key="kingma_adam_2014"></d-cite>).
+
+### Model architecture
+
+There are clear interdependences between the embedding of the instance (_Prep._ block) and the deep learning model employed (_DL_ block).
+However, as the pros and cons can be analysed individually, they will be presented individually.
+
+
 - End-to-end models
   - Recap algorithm selection problem
   - end-to-end models imply in algorithms that have as input the instance and as output a predicted optimal solution (note that there might be multiple optimal solution)
@@ -103,17 +142,18 @@ The building blocks of an MILP (mat)heuristics based on supervised, end-to-end d
     - graph approach = GNN on G(I)
     - text from qualification
     - find references for each approach
-  - Data generation
-    - of course, one can resort to historical data that is accurate to the target distribution (instances that will be seen in practice), but assuming that is an overly optimistic scenario
-    - as DL models require plenty of data for training, it is more encompassing to assume that instances will need to be generated
-    - random generation and feasibility verification
-    - generating instances of optimization problems is not a challenge just for learning-based applications, effort has already been put
-    - works on instance generation
   - training
     - (quasi-)optimal as target
     - multi-target
     - weakly-supervised
+- Data generation
+  - of course, one can resort to historical data that is accurate to the target distribution (instances that will be seen in practice), but assuming that is an overly optimistic scenario
+  - as DL models require plenty of data for training, it is more encompassing to assume that instances will need to be generated
+  - random generation and feasibility verification
+  - generating instances of optimization problems is not a challenge just for learning-based applications, effort has already been put
+  - works on instance generation
 - Learning-based heuristics
+
   - having a model, how to find a good solution fast?
   - naive application = model as heuristic
   - warm starting
