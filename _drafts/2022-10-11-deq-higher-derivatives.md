@@ -1,7 +1,7 @@
 ---
 layout: distill
 title: "Second derivative (and further) of deep equilibrium/implicit models"
-date: 2023-06-14
+date: 2023-01-14
 description: A brief study of the techniques for differentiating deep equilibrium/implicit models and an analytic approach for computing higher order derivatives. 
 tags: bsc-thesis deep-learning deq implicit-models auto-grad
 categories: unpublished-research
@@ -108,7 +108,7 @@ $$
 \newcommand{\Q}{\mathbb{Q}}
 \newcommand{\vtheta}{\boldsymbol\theta}
 \newcommand\bm[1]{\boldsymbol{#1}}
-\begin{equation}\begin{split}\label{eq:layer-definition}
+\begin{equation}\label{eq:layer-definition}\begin{split}
   \bm{f}:\R^{n}\times\mathbb{R}^{m}&\longrightarrow \mathbb{R}^{m} \\
   \bm{x},\bm{z} &\longmapsto \bm{z} = \bm{f}(\bm{x},\bm{z})
 \end{split}\end{equation}$$
@@ -174,7 +174,7 @@ In other words, we don't actually need to compute the Jacobian itself, just the 
 
 To better visualize this, consider that $$\bm{z}^*(\bm{x})$$ is part of a network
 
-$$\begin{equation}\begin{split}\label{eq:net-definition}
+$$\begin{equation}\label{eq:net-definition}\begin{split}
   NN:\R^{n'}&\longrightarrow \mathbb{R}^{m'} \\
   \bm{x}' &\longmapsto \bm{y} = NN(\bm{x}') = \bm{n}_{post}(\bm{z}^*(\bm{n}_{prior}(\bm{x}')))
 \end{split},\end{equation}$$
@@ -193,10 +193,10 @@ Running backwards (from left to right) in the matrix products necessary to compu
 Let $$\bm{u}^T = \nabla l(\bm{y}) J_{\bm{n}_{post}}(\bm{z})$$.
 Then, the "next step" in the gradient computation would be
 
-$$\begin{align*}
+$$\begin{equation}\label{eq:deq-backward-fixed-point}\begin{split}
     \bm{g}^T &= -\bm{u}^T \left[ J_{\bm{f},\bm{z}}(\bm{x},\bm{z}^*(\bm{x})) - I \right]^{-1} \\
     &= \bm{g}^T J_{\bm{f},\bm{z}}(\bm{x},\bm{z}^*(\bm{x})) + \bm{u}^T
-,\end{align*}$$
+,\end{split}\end{equation}$$
 
 which is a linear fixed-point equation and, therefore, can be solved using any root-finding algorithm.
 In comparison, this avoids the computation of the complete $$J_{\bm{f},\bm{z}}(\bm{x},\bm{z}^*(\bm{x}))$$, as this is a vJp as well, and avoids the matrix inversion $$\left[ J_{\bm{f},\bm{z}}(\bm{x},\bm{z}^*(\bm{x})) - I \right]^{-1}$$, which can be costly for large $$m$$.
@@ -259,9 +259,9 @@ $$\begin{align*}
 
 We can "stack" over $$ x_k $$ and see that
 
-$$
+$$\begin{equation}\label{eq:hessian-t}
 H_{\bm{z}^*,t\bm{x}} = -(J_{\bm{f},\bm{z}}-I)^{-1}\left[ H_{\bm{f},t\bm{x}} - \mathbf{H}_{\bm{f},\bm{z}\bm{x}}\times_2 J_{\bm{z}^*,t}^T \right]
-,$$
+,\end{equation}$$
 
 where
 
@@ -273,7 +273,95 @@ is a tensor with the partial derivatives and $$ \times_2 $$ is the 2-mode tensor
 
 ### Computing gradients through derivatives of DEQs
 
-- Differentiating a loss function on the derivative of DEQs with respect to a single variable, such as required for PINNs
+Consider now that, similar to \eqref{eq:net-definition}, $\bm{z}^*(t,\bm{x})$ is part of a network $$NN:\R^{n+1}\to\R^{m'}$$ such that the output is
+
+$$
+\bm{y} = \bm{n}_{post}(\bm{z}^*(t,\bm{x}))
+,$$
+
+where $$\bm{n}_{post}:\R^m\to\R^{m'}$$ is a differentiable functions.
+Let
+
+$$\begin{align*}
+  \ell:\R^{1\times m'}&\longrightarrow\R \\
+  J_{NN,t}(t,\bm{x}) &\longmapsto (\ell \circ J_{NN,t})(t,\bm{x})
+\end{align*}$$
+
+be a loss function on the _Jacobian_ of the network with respect to a single variable $$t$$.
+
+We need $$\nabla_{\bm{x}} (\ell \circ J_{NN,t})(t,\bm{x})$$ to use gradient-descent methods to train the model.
+By the chain rule,
+
+$$
+\nabla_{\bm{x}} (\ell \circ J_{NN,t}) = \left[ \nabla \ell \right]_{1\times m'}  \left[\frac{\partial J_{NN,t}}{\partial \bm{x}}\right]_{m' \times n} = \left[ \nabla \ell \right]_{1\times m'}  \left[ H_{NN,t\bm{x}} \right]_{m' \times n}
+$$
+
+We assume that $$\nabla \ell$$ is easily computable, so the challenge lies in computing $$H_{NN,t\bm{x}}$$.
+Following the network definition and using the chain rule, we have
+
+$$\begin{align*}
+    J_{NN,t} &= J_{\bm{n}_{post}} J_{\bm{z}^*,t} \\
+    &= - J_{\bm{n}_{post}} \left[ J_{\bm{f},\bm{z}} - I \right]^{-1} J_{\bm{f},t}
+,\end{align*}$$
+
+i.e., for each output of the network,
+
+$$
+\frac{\partial NN_{i'}}{\partial t} = J_{n_{post}^{(i')},\bm{z}} J_{\bm{z}^*,t},\,i'=1,\ldots,m'
+.$$
+
+Thus, following the same approach of the previous section,
+
+$$\begin{align*}
+H_{NN_{i'},tx_j} &\triangleq\frac{\partial^2 NN_{i'}}{\partial t\partial x_j} = \frac{\partial J_{n_{post}^{(i')},\bm{z}}}{\partial x_j} J_{\bm{z}^*,t} + J_{n_{post}^{(i')},\bm{z}} \frac{\partial J_{\bm{z}^*,t}}{\partial x_j} \\
+&= H_{n_{post}^{(i')},\bm{z}x_j} J_{\bm{z}^*,t} + J_{n_{post}^{(i')},\bm{z}} H_{\bm{z}^*,tx_j} \\
+\implies H_{NN,tx_j} &= H_{\bm{n}_{post},\bm{z}x_j} J_{\bm{z}^*,t} + J_{\bm{n}_{post},\bm{z}} H_{\bm{z}^*,tx_j} \\
+\implies H_{NN,t\bm{x}} &= H_{\bm{n}_{post},\bm{z}\bm{x}} \times_2 J_{\bm{z}^*,t}^T + J_{\bm{n}_{post},\bm{z}} H_{\bm{z}^*,t\bm{x}}
+.\end{align*}$$
+
+
+Therefore, by \eqref{eq:hessian-t}, we have
+
+$$\begin{align*}
+\nabla_{\bm{x}} (\ell \circ J_{NN,t}) &= \nabla \ell \left[ H_{\bm{n}_{post},\bm{z}\bm{x}} \times_2 J_{\bm{z}^*,t}^T + J_{\bm{n}_{post},\bm{z}} H_{\bm{z}^*,t\bm{x}} \right] \\
+&= \nabla \ell \left[ H_{\bm{n}_{post},\bm{z}\bm{x}} \times_2 J_{\bm{z}^*,t}^T - J_{\bm{n}_{post},\bm{z}}(J_{\bm{f},\bm{z}}-I)^{-1}\left[ H_{\bm{f},t\bm{x}} - \mathbf{H}_{\bm{f},\bm{z}\bm{x}}\times_2 J_{\bm{z}^*,t}^T \right] \right]
+,\end{align*}$$
+
+which can be computed through a series of vJps.
+
+To compute the vJp $$\bm{u}^T (H_{\bm{n}_{post},\bm{z}\bm{x}} \times_2 J_{\bm{z}^*,t}^T)$$, where $$\bm{u}^T = \nabla\ell$$, we first note that
+
+$$
+  \bm{u}^T \left( H_{\bm{n}_{post},\bm{z}\bm{x}} \times_2 J_{\bm{z}^*,t}^T\right) = J_{\bm{z}^*,t}^T \left( H_{\bm{n}_{post},\bm{z}\bm{x}} \times_1 \bm{u}^T \right)
+.$$
+
+The product $$G = H_{\bm{n}_{post},\bm{z}\bm{x}} \times_1 \bm{u}^T$$ is assumed to be easily computed through automatic differentiation as $$\bm{n}_{post}$$ has a differentiable forward pass.
+Then, to compute $$J_{\bm{z}^*,t}^T G$$ we see that
+
+$$\begin{equation}\label{eq:G-computation}
+    G^T J_{\bm{z}^*,t} = G^T (J_{\bm{f},\bm{z}}-I)^{-1} J_{\bm{f},t}
+,\end{equation}$$
+
+which can be computed as a series of fixed-point solutions, as each row of $$G^T$$ can be computed as in \eqref{eq:deq-backward-fixed-point}, followed by vJps with $$J_{\bm{f},t}$$.
+
+Now, for the vJp
+
+$$\bm{u}^T J_{\bm{n}_{post},\bm{z}} (J_{\bm{f},\bm{z}}-I)^{-1}\left[ H_{\bm{f},t\bm{x}} - H_{\bm{f},\bm{z}\bm{x}}\times_2 J_{\bm{z}^*,t}^T \right]
+,$$
+
+we first recall that the vJps $$\bm{v}^T = \bm{u}^TJ_{\bm{n}_{post},\bm{z}}(J_{\bm{f},\bm{z}}-I)^{-1}$$ can be computed following what was stablished in the previous section.
+Furthermore, $$\bm{v}^TH_{\bm{f},t\bm{x}}$$ can be computed through automatic differentiation as the forward pass of $$\bm{f}$$ is differentiable.
+Finally,
+
+$$\begin{align*}
+    -\bm{v}^T \left( H_{\bm{f},\bm{z}\bm{x}}\times_2 J_{\bm{z}^*,t}^T \right) &= -J_{\bm{z}^*,t}^T \left( H_{\bm{f},\bm{z}\bm{x}}\times_1 \bm{v}^T \right) \\
+    &= -J_{\bm{z}^*,t}^T V
+,\end{align*}$$
+
+as $$V=H_{\bm{f},\bm{z}\bm{x}}\times_1 g^T$$ can be computed by the definition of $$f$$.
+Then, $$-J_{\bm{z}^*,t}^T V$$ can be computed just as done for $$G$$ in \eqref{eq:G-computation}, solving a fixed-point equation.
+
+In summary, to compute the gradients of a loss over the Jacobian (on a single variable) of a DEQ, we need to implement the vJps to compute $$\bm{u}^TH_{\bm{z}^*,t\bm{x}}$$ following equation \eqref{eq:hessian-t}, which also results in solving fixed-point problems.
 
 ## Hessian of DEQs
 
