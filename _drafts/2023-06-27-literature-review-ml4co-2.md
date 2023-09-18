@@ -122,9 +122,9 @@ Examples include using the model to help guide the tree search in a B&B algorith
 
 End-to-end models are algorithms that take as input an instance of an MILP problem of interest, and provide as output a predicted optimal solution<d-footnote>Recall that an MILP may have multiple optimal solutions.</d-footnote>.
 Several challenges arise in developing an end-to-end model, such as the representation of the input MILP instances, the choice of deep learning model, and the training algorithm.
-In this section, we will present the multiple approaches present in the literature for achieving a model that is capable of predicting an optimal solution for MILP instances.
+In this section, we will present the multiple approaches in the literature for developing a model that is capable of predicting an optimal solution for MILP instances.
 
-### Model architecture
+### Model input
 
 <!-- There are clear interdependences between the embedding of the instance (_Prep._ block) and the deep learning model employed (_DL_ block).
 However, as the pros and cons can be analysed individually, they will be presented individually. -->
@@ -160,13 +160,37 @@ In this case, the resulting space of features can be seen as an "approximate" co
 Multiple works have proposed handcrafted features to represent instances of the problem of interest <d-cite key="alvarez_supervised_2014,alvarez_machine_2017,Khalil2016724,liberto_dash_2016,kruber_learning_2017"></d-cite>.
 The engineered features can be designed to be invariant to permutations of the constraints/variables of the problem and also be invariant to problem size, which increases significantly the amount of problems a machine learning model can be applied to.
 
-A novel and widely used architecture is to represent the MILP as a graph and use a Graph Convolutional Network (GCN) as the model<d-cite key="peng_graph_2021,cappart_combinatorial_2022,zhang_survey_2023"></d-cite>.
+A novel and widely used approach is to represent the MILP as a graph and use a Graph Convolutional Network (GCN) as the model<d-cite key="peng_graph_2021,cappart_combinatorial_2022,zhang_survey_2023"></d-cite>.
 Given a problem as in \eqref{eq:milp-definition}, it is possible to build a bipartite graph $$G=(V_\textrm{var}\cup V_\textrm{con},E)$$ by considering $$A$$ as an incidence matrix, following the approach of <d-cite key="gasse_exact_2019"></d-cite>.
 In other words, $$V_\textrm{var}$$ are nodes associated with variables, thus $$|V_{\textrm{var}}| = n$$; $$V_\textrm{con}$$ are nodes associated with constraints, thus $$|V_{\textrm{con}}|=m$$; and $$E=\{(v_\textrm{var,i},v_\textrm{con,j}) : A_{i,j} \neq 0\}$$ indicate whether a variable is present in a given constraint.
 Note that the graph has no ordering of nodes, thus, it is invariant to permutations of constraints and variables.
 In fact, if the graph is enhanced with node and edge weights derived from $$A$$, $$\bm{b}$$ and $$\bm{c}$$, and the nodes in $$V_{\rm var}$$ are annotated on whether they represent continuous or binary variables, the graph representation uniquely identifies MILP instances.
 
 ### Training
+
+To use gradient-based training, the output of the model must be differentiable with respect to its parameters.
+A direct derivation of this fact is that the output of the model cannot be integer values.
+This is a clear obstacle, as the scope of this work is on models able to perform solution prediction and training through supervision.
+
+The approach of Ding et al.<d-cite key="ding_accelerating_2020"></d-cite> is to define the model's ouput as a probability estimate of the variable biases in the solution for the MILP instances.
+In other words, define the model as a parameterized function
+
+$$\begin{align*}
+f: \mathcal{I}\times \Theta &\longrightarrow [0,1]^k \\
+I,\theta &\longmapsto \hat{p}(\bm{x}|I) = f_\theta(I),
+\end{align*}$$
+
+where $$\hat{p}(\bm{x}|I)$$ is the vector of estimated probabilities that the binary variables take value 1 in a solution to $$I$$, and the outputs are constrained to the unit interval, e.g., through the sigmoid functon.
+The parameter vector $$\theta$$ can be adjusted through maximum likelihood estimation, using as observed data a set of instance-solution pairs.
+Let $$\mathcal{D}=\{(I,\bm{x}^\star)\}$$ be such set of instances and optimal solutions, then the parameters of the model can be estimated through
+
+$$
+  \theta^\star = \arg\min_{\theta\in\Theta} \sum_{(I,\bm{x}^\star)}\ell(f_\theta(I), \bm{x}^\star)
+$$
+
+where $$\ell:[ 0,1]^k\times \{0,1\}^k \to \R$$ is a loss function (inverse likelihood) such as the binary cross-entropy<d-cite key="ding_accelerating_2020"></d-cite>.
+
+Beyond 
 
 Whathever the inner architecture of the model, the only requirement for the training algorithms is that the model's output is differentiable with respect to the model's parameter.
 In our context, we will define end-to-end models as _parameterized_ functions of the form
