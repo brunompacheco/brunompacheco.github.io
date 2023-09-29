@@ -1,0 +1,77 @@
+@inproceedings{vinyals_pointer_2015,
+	title = {Pointer {Networks}},
+	volume = {28},
+	url = {https://papers.nips.cc/paper_files/paper/2015/hash/29921001f2f04bd3baee84a12e98098f-Abstract.html},
+	abstract = {We introduce a new neural architecture to learn the conditional probability of an output sequence with elements that arediscrete tokens corresponding to positions in an input sequence.Such problems cannot be trivially addressed by existent approaches such as sequence-to-sequence and Neural Turing Machines,because the number of target classes in eachstep of the output depends on the length of the input, which is variable.Problems such as sorting variable sized sequences, and various combinatorialoptimization problems belong to this class.  Our model solvesthe problem of variable size output dictionaries using a recently proposedmechanism of neural attention. It differs from the previous attentionattempts in that, instead of using attention to blend hidden units of anencoder to a context vector at each decoder step, it uses attention asa pointer to select a member of the input sequence as the output. We call this architecture a Pointer Net (Ptr-Net).We show Ptr-Nets can be used to learn approximate solutions to threechallenging geometric problems -- finding planar convex hulls, computingDelaunay triangulations, and the planar Travelling Salesman Problem-- using training examples alone. Ptr-Nets not only improve oversequence-to-sequence with input attention, butalso allow us to generalize to variable size output dictionaries.We show that the learnt models generalize beyond the maximum lengthsthey were trained on. We hope our results on these taskswill encourage a broader exploration of neural learning for discreteproblems.},
+	urldate = {2023-05-10},
+	booktitle = {Advances in {Neural} {Information} {Processing} {Systems}},
+	publisher = {Curran Associates, Inc.},
+	author = {Vinyals, Oriol and Fortunato, Meire and Jaitly, Navdeep},
+	year = {2015},
+	keywords = {*, imitation learning, background, end-to-end},
+	file = {Full Text PDF:/home/brunompacheco/Zotero/storage/B52L73AJ/Vinyals et al. - 2015 - Pointer Networks.pdf:application/pdf},
+}
+
+
+@misc{pacheco2023graph,
+      title={Graph Neural Networks for the Offline Nanosatellite Task Scheduling Problem}, 
+      author={Bruno Machado Pacheco and Laio Oriel Seman and Cezar Antonio Rigo and Eduardo Camponogara and Eduardo Augusto Bezerra and Leandro dos Santos Coelho},
+      year={2023},
+      eprint={2303.13773},
+      arxiv={2303.13773},
+      archivePrefix={arXiv},
+      primaryClass={cs.LG},
+      abstract={This study investigates how to schedule nanosatellite tasks more efficiently using Graph Neural Networks (GNNs). In the Offline Nanosatellite Task Scheduling (ONTS) problem, the goal is to find the optimal schedule for tasks to be carried out in orbit while taking into account Quality-of-Service (QoS) considerations such as priority, minimum and maximum activation events, execution time-frames, periods, and execution windows, as well as constraints on the satellite's power resources and the complexity of energy harvesting and management. The ONTS problem has been approached using conventional mathematical formulations and exact methods, but their applicability to challenging cases of the problem is limited. This study examines the use of GNNs in this context, which has been effectively applied to optimization problems such as the traveling salesman, scheduling, and facility placement problems. More specifically, we investigate whether GNNs can learn the complex structure of the ONTS problem with respect to feasibility and optimality of candidate solutions. Furthermore, we evaluate using GNN-based heuristic solutions to provide better solutions (w.r.t. the objective value) to the ONTS problem and reduce the optimization cost. Our experiments show that GNNs are not only able to learn feasibility and optimality for instances of the ONTS problem, but they can generalize to harder instances than those seen during training. Furthermore, the GNN-based heuristics improved the expected objective value of the best solution found under the time limit in 45\%, and reduced the expected time to find a feasible solution in 35\%, when compared to the SCIP (Solving Constraint Integer Programs) solver in its off-the-shelf configuration.},
+}
+
+@misc{pacheco2023does,
+      title={Does pre-training on brain-related tasks results in better deep-learning-based brain age biomarkers?}, 
+      author={Bruno Machado Pacheco and Victor Hugo Rocha de Oliveira and Augusto Braga Fernandes Antunes and Saulo Domingos de Souza Pedro and Danilo Silva},
+      year={2023},
+      eprint={2307.05241},
+      archivePrefix={arXiv},
+      primaryClass={cs.CV},
+      arxiv = {2307.05241},
+      abstract = {Brain age prediction using neuroimaging data has shown great potential as an indicator of overall brain health and successful aging, as well as a disease biomarker. Deep learning models have been established as reliable and efficient brain age estimators, being trained to predict the chronological age of healthy subjects. In this paper, we investigate the impact of a pre-training step on deep learning models for brain age prediction. More precisely, instead of the common approach of pre-training on natural imaging classification, we propose pre-training the models on brain-related tasks, which led to state-of-the-art results in our experiments on ADNI data. Furthermore, we validate the resulting brain age biomarker on images of patients with mild cognitive impairment and Alzheimer's disease. Interestingly, our results indicate that better-performing deep learning models in terms of brain age prediction on healthy patients do not result in more reliable biomarkers.},
+}
+
+@article{PACHECO2023104514,
+    title = {Towards fully automated deep-learning-based brain tumor segmentation: Is brain extraction still necessary?},
+    journal = {Biomedical Signal Processing and Control},
+    volume = {82},
+    pages = {104514},
+    year = {2023},
+    issn = {1746-8094},
+    doi = {https://doi.org/10.1016/j.bspc.2022.104514},
+    url = {https://www.sciencedirect.com/science/article/pii/S1746809422009685},
+    author = {Bruno Machado Pacheco and Guilherme de Souza e Cassia and Danilo Silva},
+    keywords = {Brain extraction, Skull-stripping, Brain tumor segmentation, Deep learning, Evaluation, TCGA},
+    arxiv = {2212.07497},
+    abstract = {State-of-the-art brain tumor segmentation is based on deep learning models applied to multi-modal MRIs. Currently, these models are trained on images after a preprocessing stage that involves registration, interpolation, brain extraction (BE, also known as skull-stripping) and manual correction by an expert. However, for clinical practice, this last step is tedious and time-consuming and, therefore, not always feasible, resulting in skull-stripping faults that can negatively impact the tumor segmentation quality. Still, the extent of this impact has never been measured for any of the many different BE methods available. In this work, we propose an automatic brain tumor segmentation pipeline and evaluate its performance with multiple BE methods. Our experiments show that the choice of a BE method can compromise up to 15.7% of the tumor segmentation performance. Moreover, we propose training and testing tumor segmentation models on non-skull-stripped images, effectively discarding the BE step from the pipeline. Our results show that this approach leads to a competitive performance at a fraction of the time. We conclude that, in contrast to the current paradigm, training tumor segmentation models on non-skull-stripped images can be the best option when high performance in clinical practice is desired.}
+}
+
+@thesis{brunothesis2022,
+    title = {Physics-Informed Deep Equilibrium Models for Solving ODEs},
+    year = {2022},
+    url = {https://repositorio.ufsc.br/handle/123456789/237850},
+    type = {Bachelor's Thesis},
+    author = {Bruno Machado Pacheco},
+    school = {Federal University of Santa Catarina (UFSC)},
+    abstract = {Physics-informed neural networks (PINNs) and deep equilibrium models (DEQs) are novel approaches that approximate deep learning’s representational power to applications with realistic requirements such as robustness, data scarcity and explainability. PINNs propose an efficient way to train neural networks to model physical phenomena. DEQs are a new model architecture that can provide more representational power with fewer parameters. This work aims to study both and apply them to solve initial-value problems (IVPs) of ordinary differential equations (ODEs), in an approach coined physics-informed deep equilibrium model (PIDEQ). We implement the proposed approach and test it, analyzing the impacts of the multiple hyperparameters in the approximate solution of the Van der Pol oscillator. Our results show that indeed PIDEQ models are able to solve IVPs, providing approximate solutions with small errors.}
+}
+
+@article{KRAU2020443,
+    title = {Automated machine learning for predictive quality in production},
+    journal = {Procedia CIRP},
+    volume = {93},
+    pages = {443-448},
+    year = {2020},
+    note = {53rd CIRP Conference on Manufacturing Systems 2020},
+    issn = {2212-8271},
+    doi = {https://doi.org/10.1016/j.procir.2020.04.039},
+    url = {https://www.sciencedirect.com/science/article/pii/S2212827120306016},
+    author = {Jonathan Krauß and Bruno Machado Pacheco and Hanno Maximilian Zang and Robert Heinrich Schmitt},
+    keywords = {Predictive Quality, Machine Learning, Data Science, Automated ML, AutoML, Benchmarking, Artificial Intelligence, Data Integration, Data Preprocessing, Hyperparameter Tuning},
+    abstract = {Applications that leverage the benefits of applying machine learning (ML) in production have been successfully realized. A fundamental hurdle to scale ML-based projects is the necessity of expertise from manufacturing and data science. One possible solution lies in automating the ML pipeline: integration, preparation, modeling and model deployment. This paper shows the possibilities and limits of applying AutoML in production, including a benchmarking of available systems. Furthermore, AutoML is compared to manual implementation in a predictive quality use case: AutoML still requires programming knowledge and is outperformed by manual implementation - but sufficient results are available in a shorter timespan.}
+}
+

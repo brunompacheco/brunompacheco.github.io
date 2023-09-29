@@ -135,6 +135,62 @@
         <div class="col-sm-2 abbr"></div>
 
         <!-- Entry bib key -->
+        <div id="pacheco2023graph" class="col-sm-8">
+        <!-- Title -->
+        <div class="title">Graph Neural Networks for the Offline Nanosatellite Task Scheduling Problem</div>
+        <!-- Author -->
+        <div class="author">
+        
+
+        <em>Bruno Machado Pacheco</em>, Laio Oriel Seman, Cezar Antonio Rigo, and
+          <span class="more-authors" title="click to view 3 more authors" onclick="
+                var element = $(this);
+                element.attr('title', '');
+                var more_authors_text = element.text() == '3 more authors' ? 'Eduardo Camponogara, Eduardo Augusto Bezerra, Leandro Santos Coelho' : '3 more authors';
+                var cursorPosition = 0;
+                var textAdder = setInterval(function(){
+                  element.text(more_authors_text.substring(0, cursorPosition + 1));
+                  if (++cursorPosition == more_authors_text.length){
+                    clearInterval(textAdder);
+                  }
+              }, '10');
+              ">3 more authors</span>
+</div>
+
+        <!-- Journal/Book title and date -->
+        
+        
+        <div class="periodical">
+          2023
+        </div>
+        <div class="periodical">
+          
+        </div>
+
+          <!-- Links/Buttons -->
+          <div class="links">
+            <a class="abstract btn btn-sm z-depth-0" role="button">Abs</a>
+            <a href="http://arxiv.org/abs/2303.13773" class="btn btn-sm z-depth-0" role="button" rel="external nofollow noopener" target="_blank">arXiv</a>
+          </div>
+          
+          <div class="badges">
+            <span class="altmetric-embed" data-hide-no-mentions="true" data-hide-less-than="15" data-badge-type="2" data-badge-popover="right" data-arxiv-id="2303.13773"></span>
+              <span class="__dimensions_badge_embed__" data-pmid="" data-hide-zero-citations="true" data-style="small_rectangle" data-legend="hover-right" style="margin-bottom: 3px;"></span>
+          </div>
+
+          <!-- Hidden abstract block -->
+          <div class="abstract hidden">
+            <p>This study investigates how to schedule nanosatellite tasks more efficiently using Graph Neural Networks (GNNs). In the Offline Nanosatellite Task Scheduling (ONTS) problem, the goal is to find the optimal schedule for tasks to be carried out in orbit while taking into account Quality-of-Service (QoS) considerations such as priority, minimum and maximum activation events, execution time-frames, periods, and execution windows, as well as constraints on the satellite’s power resources and the complexity of energy harvesting and management. The ONTS problem has been approached using conventional mathematical formulations and exact methods, but their applicability to challenging cases of the problem is limited. This study examines the use of GNNs in this context, which has been effectively applied to optimization problems such as the traveling salesman, scheduling, and facility placement problems. More specifically, we investigate whether GNNs can learn the complex structure of the ONTS problem with respect to feasibility and optimality of candidate solutions. Furthermore, we evaluate using GNN-based heuristic solutions to provide better solutions (w.r.t. the objective value) to the ONTS problem and reduce the optimization cost. Our experiments show that GNNs are not only able to learn feasibility and optimality for instances of the ONTS problem, but they can generalize to harder instances than those seen during training. Furthermore, the GNN-based heuristics improved the expected objective value of the best solution found under the time limit in 45%, and reduced the expected time to find a feasible solution in 35%, when compared to the SCIP (Solving Constraint Integer Programs) solver in its off-the-shelf configuration.</p>
+          </div>
+        </div>
+      </div>
+</li>
+<li>
+<!-- _layouts/bib.html -->
+      <div class="row">
+        <div class="col-sm-2 abbr"></div>
+
+        <!-- Entry bib key -->
         <div id="pacheco2023does" class="col-sm-8">
         <!-- Title -->
         <div class="title">Does pre-training on brain-related tasks results in better deep-learning-based brain age biomarkers?</div>
@@ -169,6 +225,8 @@
 
           <!-- Links/Buttons -->
           <div class="links">
+            <a class="abstract btn btn-sm z-depth-0" role="button">Abs</a>
+            <a href="http://arxiv.org/abs/2307.05241" class="btn btn-sm z-depth-0" role="button" rel="external nofollow noopener" target="_blank">arXiv</a>
           </div>
           
           <div class="badges">
@@ -176,7 +234,10 @@
               <span class="__dimensions_badge_embed__" data-pmid="" data-hide-zero-citations="true" data-style="small_rectangle" data-legend="hover-right" style="margin-bottom: 3px;"></span>
           </div>
 
-          
+          <!-- Hidden abstract block -->
+          <div class="abstract hidden">
+            <p>Brain age prediction using neuroimaging data has shown great potential as an indicator of overall brain health and successful aging, as well as a disease biomarker. Deep learning models have been established as reliable and efficient brain age estimators, being trained to predict the chronological age of healthy subjects. In this paper, we investigate the impact of a pre-training step on deep learning models for brain age prediction. More precisely, instead of the common approach of pre-training on natural imaging classification, we propose pre-training the models on brain-related tasks, which led to state-of-the-art results in our experiments on ADNI data. Furthermore, we validate the resulting brain age biomarker on images of patients with mild cognitive impairment and Alzheimer’s disease. Interestingly, our results indicate that better-performing deep learning models in terms of brain age prediction on healthy patients do not result in more reliable biomarkers.</p>
+          </div>
         </div>
       </div>
 </li>
@@ -338,7 +399,7 @@
     <!-- Footer -->    <footer class="sticky-bottom mt-5">
       <div class="container">
         © Copyright 2023 Bruno M. Pacheco. Powered by <a href="https://jekyllrb.com/" target="_blank" rel="external nofollow noopener">Jekyll</a> with <a href="https://github.com/alshedivat/al-folio" rel="external nofollow noopener" target="_blank">al-folio</a> theme. Hosted by <a href="https://pages.github.com/" target="_blank" rel="external nofollow noopener">GitHub Pages</a>. # keywords: academic-website, research, machine-learning, deep-learning, optimization, integer-programming, MILP
-Last updated: September 01, 2023.
+Last updated: September 29, 2023.
       </div>
     </footer>
 
