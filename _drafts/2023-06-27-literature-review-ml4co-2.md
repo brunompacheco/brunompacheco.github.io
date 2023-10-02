@@ -170,17 +170,17 @@ In fact, if the graph is enhanced with node and edge weights derived from $$A$$,
 
 To use gradient-based training, the output of the model must be differentiable with respect to its parameters.
 A direct derivation of this fact is that the output of the model cannot be integer values.
-This is a clear obstacle, as the scope of this work is on models able to perform solution prediction and training through supervision.
+This is a clear obstacle, as the scope of this work is on models able to perform solution prediction and to train them through supervision.
 
-The approach of Ding et al.<d-cite key="ding_accelerating_2020"></d-cite> is to define the model's ouput as a probability estimate of the variable biases in the solution for the MILP instances.
+One approach, as presented by Ding et al.<d-cite key="ding_accelerating_2020"></d-cite>, is to define the model's ouput as a probability estimate of the variable assignments in the solution for the MILP instances.
 In other words, define the model as a parameterized function
 
 $$\begin{align*}
 f: \mathcal{I}\times \Theta &\longrightarrow [0,1]^k \\
-I,\theta &\longmapsto \hat{p}(\bm{x}|I) = f_\theta(I),
+I,\theta &\longmapsto \hat{p}(\bm{x}=\bm{1}|I) = f_\theta(I),
 \end{align*}$$
 
-where $$\hat{p}(\bm{x}|I)$$ is the vector of estimated probabilities that the binary variables take value 1 in a solution to $$I$$, and the outputs are constrained to the unit interval, e.g., through the sigmoid functon.
+where $$\hat{p}(\bm{x}=\bm{1}|I)$$ is the vector of estimated probabilities that the binary variables take value 1 in a solution to $$I$$, and the outputs are constrained to the unit interval, e.g., through the sigmoid functon.
 The parameter vector $$\theta$$ can be adjusted through maximum likelihood estimation, using as observed data a set of instance-solution pairs.
 Let $$\mathcal{D}=\{(I,\bm{x}^\star)\}$$ be such set of instances and optimal solutions, then the parameters of the model can be estimated through
 
@@ -190,20 +190,29 @@ $$
 
 where $$\ell:[ 0,1]^k\times \{0,1\}^k \to \R$$ is a loss function (inverse likelihood) such as the binary cross-entropy<d-cite key="ding_accelerating_2020"></d-cite>.
 
-Beyond 
+A predicted candidate solution can be obtained from a maximum likelihood estimation of the variables' assignment by simply rounding the output of the model.
+Even more, the confidence of the model (max. between $$\hat{p}(\bm{x}=\bm{1}|I)$$ and $$\hat{p}(\bm{x}=\bm{0}|I)$$) can be used to guide the decision to trust or not in the model's output.
 
-Whathever the inner architecture of the model, the only requirement for the training algorithms is that the model's output is differentiable with respect to the model's parameter.
-In our context, we will define end-to-end models as _parameterized_ functions of the form
+Instead of using (quasi-)optimal solutions as targets, one can use multiple feasible solutions as targets for each instance, as Nair et al. <d-cite key="nair_solving_2021"></d-cite> propose.
+Then, the training set can be described as $$\mathcal{D}=\{(I,X^\star)\}$$, where $$X^\star\subset \Z^k\times \R^{n-k}$$ represents a set of feasible solutions for $$I$$.
+The parameters of the mode are estimated as 
 
-$$\begin{align*}
-f: \mathcal{I}\times \Theta &\longrightarrow Y \\
-I,\theta &\longmapsto \bm{y} = f_\theta(I),
-\end{align*}$$
+$$
+  \theta^\star = \arg\min_{\theta\in\Theta} \sum_{(I,X^\star)\in \mathcal{D}}\sum_{\bm{x}\in X^\star}w_{I,\bm{x}}\ell(f_\theta(I), \bm{x})
+,$$
 
-in which $$Y\supseteq X$$, where $$X = \left\{ \mathbf{x} \in \mathbb{Z}^{k}\times \mathbb{R}^{n-k} : A\mathbf{x} \ge \mathbf{b} \right\} $$.
-The parameter vector $$\theta\in\Theta$$ contains the entirety of the trainable parameters, such as the weights and biases of a neural network.
-Note that this definition is such that $$f$$ contains both the _Prep._ and the _DL_ blocks of the diagram in the introduction.
-Furthermore, the output of the model is not properly a candidate solution, but rather an approximation, as an integer output would no be differentiable with respect to the parameters, a requirement for gradient-based optimization (e.g., stochastic gradient descent, Adam<d-cite key="kingma_adam_2014"></d-cite>).
+where the weight is 
+
+$$
+  w_{I,\bm{x}} = \frac{\exp(\bm{c}^T \bm{x})}{\sum_{\bm{x}'\in X^\star}\exp(\bm{c}^T\bm{x}')}
+,$$
+
+that is, the influence of each feasible solution of each instance is weighed by its associated objective value.
+Intuitively, this approach would guide the model towards predicting candidate solutions within the feasible region.
+
+
+
+
 
 
 
