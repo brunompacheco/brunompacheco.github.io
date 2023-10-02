@@ -129,24 +129,21 @@ In this section, we will present the multiple approaches present in the literatu
 <!-- There are clear interdependences between the embedding of the instance (_Prep._ block) and the deep learning model employed (_DL_ block).
 However, as the pros and cons can be analysed individually, they will be presented individually. -->
 
-Differently from tabular data, time series, or images, MILP instance are not easily translated into formats suitable for computer programs.
-Particularly, deep learning models generally work over features of the input instance.
-In other words, the MILP instance must be embedded into features that contain the necessary information for the model to provide the desired output.
+Differently from tabular data, time series, or images, MILP instances are not easily represented by formats suitable for machine learning models.
+These models are usually defined over real-valued vectors, commonly called feature vectors.
+Therefore, an MILP instance to be fed to a machine learnig model must be embedded into features, which should contain the necessary information for the model to provide the desired output.
 <!-- One must describe an MILP instance through numbers and design the programs to handle these numbers in such a way that the outcome (more numbers) represents the desired result. -->
 
-In the case of traditional neural networks, for example, the input must be a feature vector.
-Let us call $$\mathcal{I}$$ the set of all instances of an MILP problem of interest.
-The most straightforward way to embed an MILP instance $$I\in\mathcal{I}$$ formulated as in \eqref{eq:milp-definition} into a feature vector is by vectorizing the tuple $$(A,\bm{b}, \bm{c}, k)$$.
-In fact, this was the way Hopfield and Tank approached a linear programming problem at the dawn of this area of research<d-cite key="tank_simple_1986"></d-cite>.
-Note that this representation of the instance contains all information necessary to completely re-assemble the original problem instance.
-However, this embedding does not consider some symmetries of optimization problems, which exist even when we restrict ourselves to the formulation of \eqref{eq:milp-definition}.
-For example, if the order of the constraints changes, the instance is considered unaltered, but the feature vector representation will change (permutation of rows of $$\left[ A | \bm{b} \right] $$).
-Furthermore, the two resulting feature vectors (with and without the permutation) may be distant to each other (using usual distance metrics), even though they represent the same instance of the problem.
+One of the first appraches of feeding optimization problems to machine learning models as proposed by Hopfield and Tank<d-cite key="tank_simple_1986"></d-cite>, who built the feature vectors by vectorizing all values of the LP instances.
+Given an MILP instance formulated as in \eqref{eq:milp-definition}, this would be equivalent to vectorizing the tuple $$(A,\bm{b}, \bm{c}, k)$$.
+Note that the resulting feature vector contains all information necessary to completely re-assemble the original instance of the problem.
+However, this embedding does not consider some symmetries of optimization problems, which exist even when we restrict ourselves to an LP relaxation of \eqref{eq:milp-definition}.
+For example, if the order of the constraints changes (permutation of rows of $$\left[ A | \bm{b} \right] $$), the instance is considered unaltered, but the feature vector representation will change.
+Furthermore, the two resulting feature vectors (with and without the permutation) may be distant<d-footnote>Considering usual distance metrics.</d-footnote> to each other, even though they represent the same instance of the problem.
 
-An ideal set of features for an instance should provide enough information for the model to provide the desired output, and also be invariant to the symmetries of the problem.
-One way to achieve this is to guarantee that there exists a unique mapping between features and instances.
-In other words, we can achieve the ideal features by assuming that the set of instances of interest $$\mathcal{I}$$ is a manifold, and define the features as the _coordinates_ of each instance $$I\in\mathcal{I}$$.
-More precisely, one can assume that there exists a one-to-one mapping
+One way to ensure that the symmetries of the MILP problem are respected is to guarantee that there exists a unique mapping between feature vectors and problem instances.
+Intuitively, the features must be _coordinates_ of each instance $$I$$ in a manifold $$\mathcal{I}$$, which is the set of instances of interest.
+More precisely, we desire a one-to-one mapping
 
 $$\begin{align*}
     \pi : \Lambda \subset \R^{\kappa} &\longrightarrow \mathcal{I} \\
@@ -155,11 +152,11 @@ $$\begin{align*}
 
 and feed the model with $$\pi^{-1}(I)$$.
 <!-- This is easily done when we are interested in _parameterized_ problems, in which case $$\lambda$$ is simply the vector of parameters of the problem. -->
-Anderson, Turner and Koch<d-cite key="anderson_generative_2022"></d-cite> exploit the parameterized nature of their problem of interest and define $$\lambda$$ as the vector of parameters.
-This way, the mapping $$\pi$$ is easily obtained (and computable).
+Anderson, Turner and Koch<d-cite key="anderson_generative_2022"></d-cite> exploit the parameterized nature of their problem, i.e., they formulate the optimization problem as a function of "problem-defining parameters"<d-cite key="anderson_generative_2022"></d-cite>, which are then used as the feature fector.
+Since the set of instances of interest (within all possible MILP instances) is defined by the problem-defining parameters, the unique mapping is secured.
 
-Feature vectors can also be obtained through feature engineering.
-The resulting space of features can be seen as an "approximate" coordinate space.
+If the problem-defining parameters are not available (or are not expressive enough), e.g., $$\mathcal{I}$$ comes from historical data, feature vectors can be obtained through feature engineering.
+In this case, the resulting space of features can be seen as an "approximate" coordinate space of $$\mathcal{I}$$.
 Multiple works have proposed handcrafted features to represent instances of the problem of interest <d-cite key="alvarez_supervised_2014,alvarez_machine_2017,Khalil2016724,liberto_dash_2016,kruber_learning_2017"></d-cite>.
 The engineered features can be designed to be invariant to permutations of the constraints/variables of the problem and also be invariant to problem size, which increases significantly the amount of problems a machine learning model can be applied to.
 
