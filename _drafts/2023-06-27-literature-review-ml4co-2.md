@@ -1,6 +1,6 @@
 ---
 layout: distill
-title: "ML4CO - Part 2: A less-brief review of supervised end-to-end models for mixed-integer linear programming"
+title: "ML4CO - Part 2: A (less-brief) review of supervised learning models for solution prediction of MILPs"
 date: 2023-09-01
 description: A review of state-of-the-art end-to-end heuristics for MILP built upon deep learning models trained (with supervision) to predict candidate solutions. 
 tags: ml4co milp msc-thesis deep-learning
@@ -65,8 +65,8 @@ Instead of an expert, we can use data and machine learning to develop a learning
 Machine learning allows us to distill the knowledge from data instead of the years of experience from an expert.
 Furthermore, machine learning models are fast to compute (during inference) and, more specifically for the case of deep learning models, have shown great results to high-dimensional structured data.
 
-One set of applications with promising results is to train a deep learning model through supervision to predict a candidate solution to an instance of an MILP problem.
-Such an *end-to-end* model can be used straight away, as a heuristic itseld, or it can be augmented, for example, to warmstart an MILP solver<d-cite key="khalil_mip-gnn_2022"></d-cite>, in a matheuristic.
+One set of applications with promising results is to train a deep learning model through supervision to predict variable assignments to an instance of an MILP problem.
+This *solution prediction* model can be used straight away, as a heuristic itself, or it can be augmented, for example, to warmstart an MILP solver<d-cite key="khalil_mip-gnn_2022"></d-cite>, in a matheuristic.
 The building blocks of an MILP (mat)heuristics based on supervised, end-to-end deep learning models are summarized in the diagram below.
 
 <div class="row mt-3">
@@ -75,9 +75,9 @@ The building blocks of an MILP (mat)heuristics based on supervised, end-to-end d
     </div>
 </div>
 <div class="caption">
-    Building blocks of a (mat)heuristics based on supervised, end-to-end deep learning models.
+    Building blocks of a (mat)heuristics based on deep learning models trained through supervision to predict solutions.
     The <em>Prep.</em> block represent the pre-processing operations necessary to embed an instance of an MILP problem into a format that can be fed to the deep learning model (<em>DL</em> block).
-    The model returns a predicted candidate solution, which can be rounded and directly provide the heuristic output, or can be optimized over (<em>OPT</em> block, with dashed border since it is optional), forming a matheuristic.
+    The model returns a variable assignment, which can be rounded and directly provide the heuristic output, or can be optimized over (<em>OPT</em> block, with dashed border since it is optional), forming a matheuristic.
     The style follows the diagrams from Bengio et al.<d-cite key="bengio_machine_2021"></d-cite>.
 </div>
 
@@ -94,6 +94,7 @@ $$
 \newcommand{\Q}{\mathbb{Q}}
 \newcommand{\vtheta}{\boldsymbol\theta}
 \newcommand\bm[1]{\boldsymbol{#1}}
+
 \begin{equation}\label{eq:milp-definition}\begin{split}
     \min_{\bm{x}} &\quad \bm{c}^T \bm{x} \\
     \text{s.t.}&\quad A\bm{x} \ge \bm{b} \\
@@ -118,11 +119,13 @@ In the past few years, significant contributions have shed a new light into this
 Authors have suggested many approaches to incorporate deep learning models into algorithms for MILP.
 Examples include using the model to help guide the tree search in a B&B algorithm<d-cite key="nair_solving_2021"></d-cite>, evaluating whether a decomposition can speed up the optimization<d-cite key="kruber_learning_2017"></d-cite>, and switching heuristics during the B&B iterations<d-cite key="liberto_dash_2016"></d-cite>.
 
-## End-to-end models
+## Solution prediction models
 
-End-to-end models are algorithms that take as input an instance of an MILP problem of interest, and provide as output a predicted optimal solution<d-footnote>Recall that an MILP may have multiple optimal solutions.</d-footnote>.
-Several challenges arise in developing an end-to-end model, such as the representation of the input MILP instances, the choice of deep learning model, and the training algorithm.
-In this section, we will present the multiple approaches in the literature for developing a model that is capable of predicting an optimal solution for MILP instances.
+Solution prediction models are algorithms that take as input an instance of an MILP problem of interest, and provide as output a variable assignment.
+Intuitively, the closer the predicted variable assignment is to the optimal solution (in terms of objective value), the better.
+However, due to the presence of constraints and the nonlinearity of the integrality requirements, providing high quality assignments becomes a significant challenge.
+In this section, I will present the multiple approaches in the literature for developing a model that is capable of predicting optimal variable assignments for MILP instances.
+<!-- More specifically, I will focus on the impacts of difference choices for the MILP instance representation, model architecture, and training algorithm. -->
 
 ### Model input
 
@@ -166,21 +169,47 @@ In other words, $$V_\textrm{var}$$ are nodes associated with variables, thus $$|
 Note that the graph has no ordering of nodes, thus, it is invariant to permutations of constraints and variables.
 In fact, if the graph is enhanced with node and edge weights derived from $$A$$, $$\bm{b}$$ and $$\bm{c}$$, and the nodes in $$V_{\rm var}$$ are annotated on whether they represent continuous or binary variables, the graph representation uniquely identifies MILP instances.
 
-### Training
+### Model output
 
-To use gradient-based training, the output of the model must be differentiable with respect to its parameters.
-A direct derivation of this fact is that the output of the model cannot be integer values.
-This is a clear obstacle, as the scope of this work is on models able to perform solution prediction and to train them through supervision.
+The choice of output architecture for deep learning models for solution prediction depends on the specific problem and objectives.
+Commonly, the focus is on the integer variables.
+Given an assignment for the integer variables, finding optimal values for the continuos variables resumes to solving an LP, which can be done in polynomial time.
+However, to use gradient-based training (a cornerstone of deep learning), the output of the model must be differentiable with respect to its parameters.
+Therefore, the output of the model cannot be integer values.
 
-One approach, as presented by Ding et al.<d-cite key="ding_accelerating_2020"></d-cite>, is to define the model's ouput as a probability estimate of the variable assignments in the solution for the MILP instances.
-In other words, define the model as a parameterized function
+Naturally, the model can be designed for a regression task, with a continuous output that contains the possible assignments for the integer variables.
+Then, to provide assignments, one can simply round the model's output to the nearest integer value.
+More formally, let us define the model as a parameterized function
+
+$$\begin{align*}
+f: \mathcal{I}\times \Theta &\longrightarrow \R^k \\
+I,\theta &\longmapsto y = f_\theta(I),
+\end{align*}$$
+
+where an assignment for the integer variables can be generated from $$\lfloor y \rceil$$.
+
+A "classification" approach, as presented by Ding et al.<d-cite key="ding_accelerating_2020"></d-cite>, is to define the model's ouput as a probability estimate of the variable assignments in the optimal solution for the MILP instances.
+For example, let us reformulate \eqref{eq:milp-definition} such that all integer variables are binary<d-footnote>Every MILP can be reformulated using solely binary variables.</d-footnote>.
+Let $$\bm{z}\in\{0,1\}^{k}$$ be the vector of binary variables of the problem.
+Then, the model is a parameterized function
 
 $$\begin{align*}
 f: \mathcal{I}\times \Theta &\longrightarrow [0,1]^k \\
-I,\theta &\longmapsto \hat{p}(\bm{x}=\bm{1}|I) = f_\theta(I),
+I,\theta &\longmapsto \hat{p}(\bm{z}=\bm{1}|I) = f_\theta(I),
 \end{align*}$$
 
-where $$\hat{p}(\bm{x}=\bm{1}|I)$$ is the vector of estimated probabilities that the binary variables take value 1 in a solution to $$I$$, and the outputs are constrained to the unit interval, e.g., through the sigmoid functon.
+where $$\hat{p}(\bm{z}=\bm{1}|I)\in [0,1]^k$$ is the vector of probability estimates that the binary variables take value 1 in an optimal solution to $$I$$.
+The model's output can easily be constrained to the unit interval, e.g., through the sigmoid function.
+Furthermore, this approach can be generalized to provide probability estimates to integer variables with any (finite) number of possible values, e.g., through softmax layers.
+One advantage of the classification approach is that the probability estimate can be used as a measure of _confidence_ in the predicted assignment for each variable.
+This confidence measure can be used to generate partial assignments (e.g., only assigning values if the respective confidence is above a certain threshold) or as a priority order (e.g., for branching).
+
+Further structures of the problem can be exploited in the architecture of the model's output.
+For example, to predict solutions for the planar Traveling Salesperson Problem, Vinyals et al. <d-cite key="vinyals_pointer_2015"></d-cite> use attention to provide as the output a permutation of the graph nodes that form the input sequence.
+Therefore, it is guaranteed that the model always predicts a valid Hamiltonian path (visits every city exactly once).
+
+### Training
+
 The parameter vector $$\theta$$ can be adjusted through maximum likelihood estimation, using as observed data a set of instance-solution pairs.
 Let $$\mathcal{D}=\{(I,\bm{x}^\star)\}$$ be such set of instances and optimal solutions, then the parameters of the model can be estimated through
 
@@ -204,12 +233,26 @@ $$
 where the weight is 
 
 $$
-  w_{I,\bm{x}} = \frac{\exp(\bm{c}^T \bm{x})}{\sum_{\bm{x}'\in X^\star}\exp(\bm{c}^T\bm{x}')}
+  w_{I,\bm{x}} = \frac{\exp(c(\bm{x}|I))}{\sum_{\bm{x}'\in X^\star}\exp(c(\bm{x}'|I))}
 ,$$
 
-that is, the influence of each feasible solution of each instance is weighed by its associated objective value.
+where $$c(\bm{x}|I)$$ is the objective value of assignment $$\bm{x}$$ for problem intance $$I$$.
+Note that the influence of each feasible solution of an instance in the gradient computation is weighed by its associated objective value, such that solutions with higher objective value will have (exponentially) more impacty.
+Furthermore, all instances have equal weight in the gradient estimation ($$\sum_{\bm{x}\in X^\star} w_{I,\bm{x}} = 1, \forall I$$).
 Intuitively, this approach would guide the model towards predicting candidate solutions within the feasible region.
 
+A clear obstacle in both training approaches presented above is that they require solving the combinatorial optimization problems to build the training data.
+This is not a major problem if historical data is available, as the historical solutions may be used.
+However, if new instances are required for training or if the historical solutions are not good enough, then building the training set may require a lot of computational effort.
+To circumvent this problem, a weakly-supervised training was proposed and evaluated by Anderson et al.<d-cite key="anderson_generative_2022"></d-cite> and Pacheco et al.<d-cite key="pacheco2023deeplearningbased"></d-cite>.
+The authors propose to train a surrogate model 
+
+$$\begin{align*}
+g: [0,1]^k \times \mathcal{I}\times \Theta &\longrightarrow \R \\
+\hat{p}, I, \theta &\longmapsto \hat{c}(\hat{x} |I) = g_\theta(\hat{p}, I),
+\end{align*}$$
+
+to predict the objective value of an assignment $$\hat{x}=\lceil \hat{p} \rfloor
 
 
 
