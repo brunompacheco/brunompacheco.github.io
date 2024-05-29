@@ -9,11 +9,21 @@
 
 <!-- HEADER -->
 
+<nav>
+    <table><tbody><tr>
+        <td width="20%"><h2><a href="index.html">Home</a></td></h2>
+        <td width="20%"><h2><a href="#news">News</a></td></h2>
+        <td width="20%"><h2><a href="#code">Code</a></td></h2>
+        <td width="20%"><h2><a href="cv.html">CV</a></td></h2>
+    </tr></tbody></table>
+</nav>
+
 <h1>Bruno M. Pacheco</h1>
 
 
 <!-- INTRODUCTION -->
 
+<div id="intro">
 <table><tbody><tr>
     <td width="65%">
         <p>Welcome to my website!</p>
@@ -31,23 +41,26 @@
     <td width="10%"></td>
     <td width="25%"><img src="images/me.gif" alt="Me." width="220px" height="220px"></td>
 </tr></tbody></table>
-
+</div>
 
 <!-- NEWS -->
 
+<div id="news">
 <h1>News</h1>
 
 <p>[2024/04/18] I have just received the offer from UMontreal: I am strating my Ph.D. this fall at DIRO under the supervision of Prof. Margarida Carvalho and Prof. Kim Yu!</p>
 
-<p>[2023/10/02] From October 15th to 18th I will attend <a href="https://sbai2023.com.br/">SBAI2023</a> and present our paper on deep learning for oil production optimizaton.</p>
+<p>[2023/10/02] From October 15th to 18th I will attend SBAI 2023 and present our paper on deep learning for oil production optimizaton.</p>
 
 <p>[2023/09/26] I just presented our paper on pre-training for deep-learning-based brain age at BRACIS 2023.</p>
 
 <p>[2023/05/01] I have started as a B.Sc. research intern in a Petrobras project on offshore oil production optimization.</p>
+</div>
 
 
 <!-- PUBLICATIONS -->
 
+<div id="publications">
 <h1>Selected Publications</h1>
 
 <p>For an up-to-date list including all my publications, check out my <a href="https://scholar.google.com/citations?user=a97d6zEAAAAJ">Google Scholar page</a>.</p>
@@ -84,19 +97,59 @@
         2023
     </p></li>
 </ul>
+</div>
 
 
 <!-- CODE -->
 
+<div id="code">
 <h1>Selected Code Repositories</h1>
 
-<p style="color:red"><b>TODO</b></p>
+<o>
+These are some code repositories of which I am either the only author or a main contributor.
+Most of my publicly available code can be found in my <a href="https://github.com/brunompacheco">GitHub</a>.
+</o>
+
+<ul>
+    <li><p>
+        <b><a href="https://github.com/brunompacheco/deep-learning-boilerplate">Deep Learning Boilerplate</a></b><br>
+        A boilerplate for deep learning projects with PyTorch, including training and evaluation scripts, data loaders, and experiment tracking (using W&B).
+        I use it for most of my deep learning research projects.
+    </p></li>
+    <li><p>
+        <b><a href="https://github.com/gos-ufsc/sat-gnn">SatGNN</a></b><br>
+        Implementation of the experiments reported in the paper "Graph Neural Networks for the Offline Nanosatellite Task Scheduling Problem", including GNN training and heuristic building.
+    </p></li>
+    <li><p>
+        <b><a href="https://github.com/gama-ufsc/brain-age">Pre-training brain age deep learning models</a></b><br>
+        Implementation of the experiments reported in the paper "Does pre-training on brain-related tasks results in better deep-learning-based brain age biomarkers?".
+    </p></li>
+    <li><p>
+        <b><a href="https://github.com/brunompacheco/pideq">Physics-Informed Deep Equilibrium models</a></b><br>
+        The code of my B.Sc. thesis. PyTorch implementation of deep equilibrium models with support for physics-informed learning, i.e., second-order regularization terms.
+        It also contains the experiments performed on the Van der Pol oscillator.
+    </p></li>
+    <li><p>
+        <b><a href="https://github.com/brunompacheco/part-counting">Part counting</a></b><br>
+        A project I worked on for a course of my B.Sc. in Control and Automation Engineering.
+        It is basically a computer vision tool (with some deep learning) to estimate the amount of parts in an RGB-Depth image. 
+    </p></li>
+    <li><p>
+        <b><a href="https://github.com/brunompacheco/ImunoForce">ImunoForce</a></b><br>
+        A simple shoot 'em up game written in C using the Allegro library. It was developed as project for a course during high shool.
+    </p></li>
+</ul>
+
+</div>
 
 
 <!-- CV -->
 
+<div id="cv">
 <h1>CV</h1>
 
 <p style="color:red"><b>TODO</b></p>
+
+</div>"
 
 </body>
